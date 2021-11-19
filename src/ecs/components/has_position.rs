@@ -6,5 +6,5 @@ use crate::model::Position;
 
 #[derive(Component, Copy, Clone, Debug, Deserialize, Hash, PartialEq, Serialize)]
 pub struct HasPosition {
-  position: Position,
+    pub position: Position,
 }

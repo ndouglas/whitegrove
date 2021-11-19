@@ -1,4 +1,4 @@
-use rltk::{ BError, main_loop };
+use rltk::{main_loop, BError};
 
 pub mod context;
 pub use context::*;

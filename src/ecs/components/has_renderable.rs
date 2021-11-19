@@ -6,5 +6,5 @@ use crate::render::Renderable;
 
 #[derive(Component, Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct HasRenderable {
-  renderable: Renderable,
+    pub renderable: Renderable,
 }

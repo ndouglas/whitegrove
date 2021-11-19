@@ -7,6 +7,7 @@ authors = ["Nathan Douglas <github@darkdell.net>"]
 [dependencies]
 derivative = "2.2.0"
 getrandom = { version = "0.2", features = ["js"] }
+lazy_static = "1.4.0"
 log = "0.4.14"
 pretty_env_logger = "0.4.0"
 rltk = { version = "0.8.0", features = ["serde"] }
