@@ -2,5 +2,8 @@
 name = "whitegrove"
 version = "0.1.0"
 edition = "2021"
+authors = ["Nathan Douglas <github@darkdell.net>"]
 
 [dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+rltk = { version = "0.8.0" }

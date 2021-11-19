@@ -1,6 +1,8 @@
 # Whitegrove
 An experimental semi-interactive roguelike built in Rust.
 
+You can play the game [in your browser](https://ndouglas.github.io/whitegrove/) (assuming your browser supports it).
+
 My other research roguelike, [Downdelving](https://github.com/ndouglas/downdelving/), is at this point somewhat traditional.  It was built following Bracket's [exceptional tutorial](https://bfnightly.bracketproductions.com/).
 
 _Whitegrove_ is quite different.  It's roguelike in some ways, but I'm not sure if it's really a game or not.  It may replace _Downdelving_, or it might sputter out and die in a matter of a few commits.
