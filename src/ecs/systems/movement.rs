@@ -1,8 +1,9 @@
 use specs::prelude::*;
 
-use crate::ecs::components::{HasPosition, WantsToMove};
+use crate::ecs::components::{HasPosition, IsPlayer, WantsToMove};
 use crate::map::tile::TileTrait;
 use crate::map::Map;
+use crate::model::CompassDirection;
 
 pub struct Movement {}
 
@@ -12,13 +13,16 @@ impl<'a> System<'a> for Movement {
         Entities<'a>,
         WriteStorage<'a, WantsToMove>,
         WriteStorage<'a, HasPosition>,
+        ReadStorage<'a, IsPlayer>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (map, entities, mut wants_to_move_storage, mut has_position_storage) = data;
+        let (map, entities, mut wants_to_move_storage, mut has_position_storage, is_player_storage) = data;
         let map_width = map.width;
         let map_height = map.height;
         let mut satisfied = vec![];
+        let mut unsatisfied = vec![];
+        let mut unsat_direction: Option<CompassDirection> = None;
         for (entity, wants_to_move, has_position) in (&entities, &mut wants_to_move_storage, &mut has_position_storage).join() {
             let mut position = &mut has_position.position;
             if let Ok(dest) = position.get_safe_to_compass_direction((map_width, map_height), wants_to_move.compass_direction) {
@@ -27,10 +31,25 @@ impl<'a> System<'a> for Movement {
                     position.y = dest.y;
                 }
             }
-            satisfied.push(entity);
+            let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
+            if let Some(_is_player) = is_player_option {
+                satisfied.push(entity);
+                unsat_direction = Some(wants_to_move.compass_direction);
+            }
+            else {
+                unsatisfied.push(entity);
+            }
         }
-        for entity in (&entities).join() {
-            wants_to_move_storage.remove(entity);
+        for entity in satisfied.iter() {
+            wants_to_move_storage.remove(*entity);
+        }
+        if let Some(compass_direction) = unsat_direction {
+            for entity in unsatisfied.iter() {
+                wants_to_move_storage.insert(*entity, WantsToMove {
+                    compass_direction,
+                })
+                .expect("Unable to insert movement.");
+            }
         }
     }
 }
