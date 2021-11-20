@@ -4,7 +4,7 @@ use crate::error::Error;
 
 use super::{idx_to_xy, xy_to_idx, CompassDirection, UnsafePosition};
 
-#[derive(Copy, Clone, Debug, Deserialize, Hash, PartialEq, Serialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Position {
     pub x: usize,
     pub y: usize,

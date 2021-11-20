@@ -21,8 +21,8 @@ pub enum TileType {
 }
 
 lazy_static! {
-    static ref FLOOR: Mutex<Floor> = Mutex::new(Floor {});
-    static ref WALL: Mutex<Wall> = Mutex::new(Wall {});
+    static ref FLOOR: Mutex<Floor> = Mutex::new(Floor::new());
+    static ref WALL: Mutex<Wall> = Mutex::new(Wall::new());
 }
 
 impl TileType {}

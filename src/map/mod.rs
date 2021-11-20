@@ -1,8 +1,6 @@
 use rltk::{Algorithm2D, BaseMap, Point, Rltk};
 use serde::*;
-use specs::*;
 
-use crate::ecs::components::*;
 use crate::model::{idx_to_xy, xy_to_idx, Position};
 
 pub mod tile;
@@ -18,34 +16,36 @@ pub struct Map {
     pub height: usize,
     pub length: usize,
     pub tiles: Vec<TileType>,
+    pub revealed_tiles: Vec<bool>,
 }
 
 impl Map {
     pub fn new(width: usize, height: usize) -> Self {
         let length = width * height;
-        let tiles = get_rooms_and_corridors_tile_map(width, height);
+        let tiles = get_random_tile_map(width, height);
         Map {
             width: width,
             height: height,
             length: length,
             tiles: tiles,
+            revealed_tiles: vec![false; length],
         }
     }
 
-    pub fn draw(&self, ecs: &World, ctx: &mut Rltk) {
-        let has_position_storage = ecs.read_storage::<HasPosition>();
-        let mut has_viewshed_storage = ecs.write_storage::<HasViewshed>();
-        let _is_player_storage = ecs.read_storage::<IsPlayer>();
-        for (has_position, has_viewshed) in (&has_position_storage, &mut has_viewshed_storage).join() {
-            let _position = &has_position.position;
-            let viewshed = &has_viewshed.viewshed;
-            for (idx, tile) in self.tiles.iter().enumerate() {
+    pub fn draw(&self, ctx: &mut Rltk) {
+        for (idx, tile) in self.tiles.iter().enumerate() {
+            let (x, y) = self.get_idx_as_xy(idx);
+            if self.revealed_tiles[idx] {
                 let renderable = tile.get_renderable();
-                let (x, y) = self.get_idx_as_xy(idx);
-                if viewshed.contains_xy((x, y)) {
-                    ctx.set(x, y, renderable.fg, renderable.bg, renderable.glyph);
-                }
+                ctx.set(x, y, renderable.fg, renderable.bg, renderable.glyph);
             }
+        }
+    }
+
+    pub fn set_revealed_tiles_from_positions(&mut self, positions: Vec<&Position>) {
+        for position in positions.iter() {
+            let idx = self.get_xy_as_idx(position.x, position.y);
+            self.revealed_tiles[idx] = true;
         }
     }
 

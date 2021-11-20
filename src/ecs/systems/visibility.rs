@@ -6,7 +6,11 @@ use crate::map::Map;
 pub struct Visibility {}
 
 impl<'a> System<'a> for Visibility {
-    type SystemData = (ReadExpect<'a, Map>, WriteStorage<'a, HasViewshed>, WriteStorage<'a, HasPosition>);
+    type SystemData = (
+        ReadExpect<'a, Map>,
+        WriteStorage<'a, HasViewshed>,
+        WriteStorage<'a, HasPosition>,
+    );
 
     fn run(&mut self, data: Self::SystemData) {
         let (map, mut has_viewshed_storage, has_position_storage) = data;
@@ -15,10 +19,9 @@ impl<'a> System<'a> for Visibility {
         {
             let position = &has_position.position;
             let viewshed = &mut has_viewshed.viewshed;
-            viewshed.recalculate(position, &*map);
+            if viewshed.is_dirty {
+                viewshed.recalculate(position, &*map);
+            }
         }
     }
 }
-
-
-

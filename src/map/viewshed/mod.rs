@@ -10,6 +10,7 @@ use field_of_view::*;
 pub struct Viewshed {
     pub visible_positions: Vec<Position>,
     pub range: usize,
+    pub is_dirty: bool,
 }
 
 impl Viewshed {
@@ -17,6 +18,7 @@ impl Viewshed {
         Viewshed {
             visible_positions: Vec::new(),
             range: range,
+            is_dirty: true,
         }
     }
 
@@ -25,14 +27,17 @@ impl Viewshed {
     }
 
     pub fn contains_xy(&self, (x, y): (usize, usize)) -> bool {
-        self.contains(&Position {
-          x, y,
-        })
+        self.contains(&Position { x, y })
     }
 
     pub fn recalculate(&mut self, pos: &Position, map: &Map) {
         self.visible_positions.clear();
-        self.visible_positions = field_of_view(pos.x as i32, pos.y as i32, self.range.try_into().unwrap(), map);
+        self.visible_positions = field_of_view(
+            pos.x as i32,
+            pos.y as i32,
+            self.range.try_into().unwrap(),
+            map,
+        );
+        self.is_dirty = false;
     }
-
 }

@@ -4,12 +4,22 @@ use super::TileTrait;
 
 use crate::render::{Factory as RenderableFactory, Renderable};
 
-#[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Serialize)]
-pub struct Floor {}
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+pub struct Floor {
+    renderable: Renderable,
+}
+
+impl Floor {
+    pub fn new() -> Self {
+        Floor {
+            renderable: RenderableFactory::Floor.create(),
+        }
+    }
+}
 
 impl TileTrait for Floor {
     fn get_renderable(&self) -> Renderable {
-        RenderableFactory::Floor.create()
+        self.renderable
     }
 
     fn is_walkable(&self) -> bool {
