@@ -1,10 +1,9 @@
-use rltk::RGB;
 use specs::prelude::*;
 
 use crate::ecs::components::*;
 use crate::map::*;
 use crate::model::*;
-use crate::render::*;
+use crate::render::Factory as RenderableFactory;
 
 pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
     let player = ecs
@@ -13,11 +12,7 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
             position: Position { x: x, y: y },
         })
         .with(HasRenderable {
-            renderable: Renderable {
-                glyph: rltk::to_cp437('@'),
-                fg: RGB::named(rltk::YELLOW),
-                bg: RGB::named(rltk::BLACK),
-            },
+            renderable: RenderableFactory::Player.create(),
         })
         .with(IsPlayer {})
         .build();
@@ -31,11 +26,7 @@ pub fn inject_mobs(ecs: &mut World) {
                 position: Position { x: i * 7, y: 20 },
             })
             .with(HasRenderable {
-                renderable: Renderable {
-                    glyph: rltk::to_cp437('☺'),
-                    fg: RGB::named(rltk::RED),
-                    bg: RGB::named(rltk::BLACK),
-                },
+                renderable: RenderableFactory::Monster.create(),
             })
             .with(WantsToMove {
                 compass_direction: CompassDirection::West,
