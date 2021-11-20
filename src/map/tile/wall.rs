@@ -15,4 +15,8 @@ impl TileTrait for Wall {
     fn is_walkable(&self) -> bool {
         false
     }
+
+    fn is_opaque(&self) -> bool {
+        true
+    }
 }

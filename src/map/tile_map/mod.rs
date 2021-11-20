@@ -1,5 +1,5 @@
 use rltk::RandomNumberGenerator;
-use std::cmp::{max, min};
+use std::cmp::min;
 
 use crate::model::{get_dim_distance, xy_to_idx, Rectangle};
 
@@ -70,43 +70,9 @@ pub fn get_rooms_and_corridors_tile_map(width: usize, height: usize) -> Vec<Tile
             fill_rectangle_of_tile_map(&new_room, &mut result, width, TileType::Floor);
 
             if !rooms.is_empty() {
-                let (new_x, new_y) = new_room.get_center();
-                let (prev_x, prev_y) = rooms[rooms.len() - 1].get_center();
-                if rng.range(0, 2) == 1 {
-                    fill_horizontal_line_of_tile_map(
-                        &mut result,
-                        prev_x,
-                        new_x,
-                        prev_y,
-                        width,
-                        TileType::Floor,
-                    );
-                    fill_vertical_line_of_tile_map(
-                        &mut result,
-                        new_x,
-                        prev_y,
-                        new_y,
-                        width,
-                        TileType::Floor,
-                    );
-                } else {
-                    fill_vertical_line_of_tile_map(
-                        &mut result,
-                        prev_x,
-                        prev_y,
-                        new_y,
-                        width,
-                        TileType::Floor,
-                    );
-                    fill_horizontal_line_of_tile_map(
-                        &mut result,
-                        prev_x,
-                        new_x,
-                        new_y,
-                        width,
-                        TileType::Floor,
-                    );
-                }
+                let r1c = new_room.get_center();
+                let r2c = rooms[rooms.len() - 1].get_center();
+                create_corridor(&mut result, width, r1c, r2c);
             }
 
             rooms.push(new_room);
@@ -128,6 +94,16 @@ pub fn fill_rectangle_of_tile_map(
     }
 }
 
+pub fn create_corridor(
+    tiles: &mut [TileType],
+    width: usize,
+    (x1, y1): (usize, usize),
+    (x2, y2): (usize, usize),
+) {
+    fill_vertical_line_of_tile_map(tiles, x1, y1, y2, width, TileType::Floor);
+    fill_horizontal_line_of_tile_map(tiles, x1, x2, y2, width, TileType::Floor);
+}
+
 pub fn fill_horizontal_line_of_tile_map(
     tiles: &mut [TileType],
     x1: usize,
@@ -137,7 +113,7 @@ pub fn fill_horizontal_line_of_tile_map(
     tile: TileType,
 ) {
     let length = get_dim_distance(x1, x2);
-    let rectangle = Rectangle::from_horizontal_line((min(x1, x2), y), length, 1);
+    let rectangle = Rectangle::from_horizontal_line((min(x1, x2), y), length + 1, 1);
     fill_rectangle_of_tile_map(&rectangle, tiles, width, tile);
 }
 

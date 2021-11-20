@@ -14,6 +14,9 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
         .with(HasRenderable {
             renderable: RenderableFactory::Player.create(),
         })
+        .with(HasViewshed {
+            viewshed: Viewshed::new(8),
+        })
         .with(IsPlayer {})
         .build();
     ecs.insert(player);
@@ -27,6 +30,9 @@ pub fn inject_mobs(ecs: &mut World) {
             })
             .with(HasRenderable {
                 renderable: RenderableFactory::Monster.create(),
+            })
+            .with(HasViewshed {
+                viewshed: Viewshed::new(8),
             })
             .with(WantsToMove {
                 compass_direction: CompassDirection::West,

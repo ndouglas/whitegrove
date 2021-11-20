@@ -11,6 +11,7 @@ use wall::*;
 pub trait TileTrait {
     fn get_renderable(&self) -> Renderable;
     fn is_walkable(&self) -> bool;
+    fn is_opaque(&self) -> bool;
 }
 
 #[derive(Copy, Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
@@ -40,6 +41,14 @@ impl TileTrait for TileType {
         match self {
             Floor => FLOOR.lock().unwrap().is_walkable(),
             Wall => WALL.lock().unwrap().is_walkable(),
+        }
+    }
+
+    fn is_opaque(&self) -> bool {
+        use TileType::*;
+        match self {
+            Floor => FLOOR.lock().unwrap().is_opaque(),
+            Wall => WALL.lock().unwrap().is_opaque(),
         }
     }
 }

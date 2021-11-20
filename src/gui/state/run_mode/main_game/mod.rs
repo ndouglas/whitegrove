@@ -32,7 +32,7 @@ impl Mode {
             DoSomeStuff => {
                 {
                     let map = ecs.fetch::<Map>();
-                    map.draw(ctx);
+                    map.draw(ecs, ctx);
                 }
                 {
                     let has_position_storage = ecs.read_storage::<HasPosition>();

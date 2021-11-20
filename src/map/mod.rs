@@ -1,12 +1,16 @@
-use rltk::Rltk;
+use rltk::{Algorithm2D, BaseMap, Point, Rltk};
 use serde::*;
+use specs::*;
 
+use crate::ecs::components::*;
 use crate::model::{idx_to_xy, xy_to_idx, Position};
 
 pub mod tile;
-use tile::*;
+pub use tile::*;
 pub mod tile_map;
-use tile_map::*;
+pub use tile_map::*;
+pub mod viewshed;
+pub use viewshed::*;
 
 #[derive(Clone, Default, Debug, Deserialize, Serialize)]
 pub struct Map {
@@ -28,11 +32,20 @@ impl Map {
         }
     }
 
-    pub fn draw(&self, ctx: &mut Rltk) {
-        for (idx, tile) in self.tiles.iter().enumerate() {
-            let renderable = tile.get_renderable();
-            let (x, y) = self.get_idx_as_xy(idx);
-            ctx.set(x, y, renderable.fg, renderable.bg, renderable.glyph);
+    pub fn draw(&self, ecs: &World, ctx: &mut Rltk) {
+        let has_position_storage = ecs.read_storage::<HasPosition>();
+        let mut has_viewshed_storage = ecs.write_storage::<HasViewshed>();
+        let _is_player_storage = ecs.read_storage::<IsPlayer>();
+        for (has_position, has_viewshed) in (&has_position_storage, &mut has_viewshed_storage).join() {
+            let _position = &has_position.position;
+            let viewshed = &has_viewshed.viewshed;
+            for (idx, tile) in self.tiles.iter().enumerate() {
+                let renderable = tile.get_renderable();
+                let (x, y) = self.get_idx_as_xy(idx);
+                if viewshed.contains_xy((x, y)) {
+                    ctx.set(x, y, renderable.fg, renderable.bg, renderable.glyph);
+                }
+            }
         }
     }
 
@@ -54,5 +67,17 @@ impl Map {
 
     pub fn get_idx_as_xy(&self, idx: usize) -> (usize, usize) {
         idx_to_xy(self.width, idx)
+    }
+}
+
+impl Algorithm2D for Map {
+    fn dimensions(&self) -> Point {
+        Point::new(self.width, self.height)
+    }
+}
+
+impl BaseMap for Map {
+    fn is_opaque(&self, idx: usize) -> bool {
+        self.tiles[idx].is_opaque()
     }
 }
