@@ -2,7 +2,7 @@ use serde::*;
 
 use super::TileTrait;
 
-use crate::render::{ Renderable, Factory as RenderableFactory };
+use crate::render::{Factory as RenderableFactory, Renderable};
 
 #[derive(Clone, Copy, Debug, Deserialize, Hash, PartialEq, Serialize)]
 pub struct Floor {}

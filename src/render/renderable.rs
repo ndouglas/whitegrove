@@ -1,4 +1,4 @@
-use rltk::{FontCharType, RGB, to_cp437};
+use rltk::{to_cp437, FontCharType, RGB};
 use serde::*;
 
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -17,7 +17,6 @@ pub enum Factory {
 }
 
 impl Factory {
-
     pub fn create(&self) -> Renderable {
         use Factory::*;
         match self {
@@ -43,5 +42,4 @@ impl Factory {
             },
         }
     }
-
 }

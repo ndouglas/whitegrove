@@ -17,10 +17,9 @@ pub struct Map {
 }
 
 impl Map {
-
     pub fn new(width: usize, height: usize) -> Self {
         let length = width * height;
-        let tiles = get_random_tile_map(width, height);
+        let tiles = get_rooms_and_corridors_tile_map(width, height);
         Map {
             width: width,
             height: height,
@@ -56,5 +55,4 @@ impl Map {
     pub fn get_idx_as_xy(&self, idx: usize) -> (usize, usize) {
         idx_to_xy(self.width, idx)
     }
-
 }
