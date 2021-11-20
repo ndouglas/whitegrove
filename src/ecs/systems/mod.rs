@@ -1,9 +1,9 @@
 use specs::prelude::*;
 
-pub mod move_west;
-use move_west::*;
+pub mod movement;
+use movement::*;
 
 pub fn run_systems(ecs: &mut World) {
-    let mut move_west = MoveWest {};
-    move_west.run_now(ecs);
+    let mut movement = Movement {};
+    movement.run_now(ecs);
 }

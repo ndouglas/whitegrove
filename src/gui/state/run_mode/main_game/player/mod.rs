@@ -2,8 +2,10 @@ use rltk::{Rltk, VirtualKeyCode};
 use specs::prelude::*;
 use std::cmp::{max, min};
 
+use crate::commands::*;
 use crate::ecs::components::*;
 use crate::map::*;
+use crate::model::CompassDirection;
 
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let map_width;
@@ -29,18 +31,17 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 }
 
 pub fn player_input(ecs: &mut World, ctx: &mut Rltk) {
-    // Player movement
+    let player_entity;
+    {
+       player_entity = *ecs.fetch::<Entity>();
+    }
     match ctx.key {
         None => {} // Nothing happened
         Some(key) => match key {
-            VirtualKeyCode::Left => {
-                let player_entity = ecs.fetch::<Entity>();
-                ecs.write_storage::<WantsToMoveWest>()
-                    .insert(*player_entity, WantsToMoveWest {});
-            } //try_move_player(-1, 0, ecs),
-            VirtualKeyCode::Right => try_move_player(1, 0, ecs),
-            VirtualKeyCode::Up => try_move_player(0, -1, ecs),
-            VirtualKeyCode::Down => try_move_player(0, 1, ecs),
+            VirtualKeyCode::Left => move_compass_direction(ecs, player_entity, CompassDirection::West),
+            VirtualKeyCode::Right => move_compass_direction(ecs, player_entity, CompassDirection::East),
+            VirtualKeyCode::Up => move_compass_direction(ecs, player_entity, CompassDirection::North),
+            VirtualKeyCode::Down => move_compass_direction(ecs, player_entity, CompassDirection::South),
             _ => {}
         },
     }

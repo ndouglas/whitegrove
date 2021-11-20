@@ -7,12 +7,12 @@ pub mod has_renderable;
 pub use has_renderable::*;
 pub mod is_player;
 pub use is_player::*;
-pub mod wants_to_move_west;
-pub use wants_to_move_west::*;
+pub mod wants_to_move;
+pub use wants_to_move::*;
 
 pub fn register_components(ecs: &mut World) {
     ecs.register::<HasPosition>();
     ecs.register::<HasRenderable>();
     ecs.register::<IsPlayer>();
-    ecs.register::<WantsToMoveWest>();
+    ecs.register::<WantsToMove>();
 }

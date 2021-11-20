@@ -7,7 +7,8 @@ use crate::model::*;
 use crate::render::*;
 
 pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
-    let player = ecs.create_entity()
+    let player = ecs
+        .create_entity()
         .with(HasPosition {
             position: Position { x: x, y: y },
         })
@@ -36,7 +37,9 @@ pub fn inject_mobs(ecs: &mut World) {
                     bg: RGB::named(rltk::BLACK),
                 },
             })
-            .with(WantsToMoveWest {})
+            .with(WantsToMove {
+                compass_direction: CompassDirection::West,
+            })
             .build();
     }
 }

@@ -8,8 +8,10 @@ extern crate serde;
 extern crate specs;
 extern crate specs_derive;
 
+pub mod commands;
 pub mod ecs;
 pub mod entity;
+pub mod error;
 pub mod gui;
 pub mod map;
 pub mod model;
