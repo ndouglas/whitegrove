@@ -6,6 +6,7 @@ pub mod initialize;
 use initialize::initialize_world;
 
 use crate::ecs::components::*;
+use crate::map::*;
 
 use super::RunMode;
 
@@ -20,13 +21,15 @@ impl Mode {
         use Mode::*;
         match self {
             Initialize => {
-                initialize_world(ecs);
+                initialize_world(ecs, 128, 128);
                 Some(RunMode::MainGame {
                     mode: Mode::DoSomeStuff,
                 })
             }
             DoSomeStuff => {
                 ctx.cls();
+                let map = ecs.fetch::<Map>();
+                map.draw(ctx);
                 let positions = ecs.read_storage::<HasPosition>();
                 let renderables = ecs.read_storage::<HasRenderable>();
                 for (pos, render) in (&positions, &renderables).join() {

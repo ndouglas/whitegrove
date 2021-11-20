@@ -13,7 +13,6 @@ pub struct State {
 }
 
 impl State {
-
     pub fn new() -> Self {
         let mut ecs = World::new();
         register_components(&mut ecs);
@@ -27,7 +26,6 @@ impl State {
         run_systems(&mut self.ecs);
         self.ecs.maintain();
     }
-
 }
 
 impl GameState for State {
@@ -35,8 +33,7 @@ impl GameState for State {
         let ecs = &mut self.ecs;
         if let Some(new_mode) = self.run_mode.tick(ecs, ctx) {
             self.run_mode = new_mode;
-        }
-        else {
+        } else {
             self.run_systems();
         }
     }

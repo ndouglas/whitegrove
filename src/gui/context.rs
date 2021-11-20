@@ -1,8 +1,9 @@
 use rltk::{Rltk, RltkBuilder};
 
-pub fn create_context() -> Rltk {
-    RltkBuilder::simple80x50()
-        .with_title("Roguelike Tutorial")
+pub fn create_context(width: usize, height: usize) -> Rltk {
+    RltkBuilder::simple(width, height)
+        .unwrap()
+        .with_title("Whitegrove")
         .build()
         .expect("Could not create context.")
 }
