@@ -46,7 +46,10 @@ impl UnsafePosition {
     }
 
     pub fn is_safe(&self, (width, height): (usize, usize)) -> bool {
-        self.x >= 0 && self.y >= 0 && self.x < width.try_into().unwrap() && self.y < height.try_into().unwrap()
+        self.x >= 0
+            && self.y >= 0
+            && self.x < width.try_into().unwrap()
+            && self.y < height.try_into().unwrap()
     }
 
     pub fn get_safe(&self, (width, height): (usize, usize)) -> Result<Position, Error> {

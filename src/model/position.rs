@@ -11,7 +11,6 @@ pub struct Position {
 }
 
 impl Position {
-
     pub fn new(x: usize, y: usize) -> Self {
         Position { x, y }
     }
@@ -29,28 +28,39 @@ impl Position {
         (*self).into()
     }
 
-    pub fn get_unsafe_to_delta(
-        &self,
-        (dx, dy): (i32, i32),
-    ) -> UnsafePosition {
+    pub fn get_unsafe_to_delta(&self, (dx, dy): (i32, i32)) -> UnsafePosition {
         self.get_unsafe().get_to_delta((dx, dy))
     }
 
-    pub fn is_safe_to_delta(&self, (width, height): (usize, usize),
-        (dx, dy): (i32, i32)) -> bool {
+    pub fn is_safe_to_delta(&self, (width, height): (usize, usize), (dx, dy): (i32, i32)) -> bool {
         self.get_unsafe_to_delta((dx, dy)).is_safe((width, height))
     }
 
-    pub fn get_safe_to_delta(&self, (width, height): (usize, usize), (dx, dy): (i32, i32)) -> Result<Position, Error> {
+    pub fn get_safe_to_delta(
+        &self,
+        (width, height): (usize, usize),
+        (dx, dy): (i32, i32),
+    ) -> Result<Position, Error> {
         self.get_unsafe_to_delta((dx, dy)).get_safe((width, height))
     }
 
-    pub fn is_safe_to_compass_direction(&self, (width, height): (usize, usize), dir: CompassDirection) -> bool {
-        self.get_unsafe().get_to_compass_direction(dir).is_safe((width, height))
+    pub fn is_safe_to_compass_direction(
+        &self,
+        (width, height): (usize, usize),
+        dir: CompassDirection,
+    ) -> bool {
+        self.get_unsafe()
+            .get_to_compass_direction(dir)
+            .is_safe((width, height))
     }
 
-    pub fn get_safe_to_compass_direction(&self, (width, height): (usize, usize), dir: CompassDirection) -> Result<Position, Error> {
-        self.get_unsafe().get_to_compass_direction(dir).get_safe((width, height))
+    pub fn get_safe_to_compass_direction(
+        &self,
+        (width, height): (usize, usize),
+        dir: CompassDirection,
+    ) -> Result<Position, Error> {
+        self.get_unsafe()
+            .get_to_compass_direction(dir)
+            .get_safe((width, height))
     }
-
 }

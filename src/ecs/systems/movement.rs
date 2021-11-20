@@ -17,15 +17,25 @@ impl<'a> System<'a> for Movement {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (map, entities, mut wants_to_move_storage, mut has_position_storage, is_player_storage) = data;
+        let (map, entities, mut wants_to_move_storage, mut has_position_storage, is_player_storage) =
+            data;
         let map_width = map.width;
         let map_height = map.height;
         let mut satisfied = vec![];
         let mut unsatisfied = vec![];
         let mut unsat_direction: Option<CompassDirection> = None;
-        for (entity, wants_to_move, has_position) in (&entities, &mut wants_to_move_storage, &mut has_position_storage).join() {
+        for (entity, wants_to_move, has_position) in (
+            &entities,
+            &mut wants_to_move_storage,
+            &mut has_position_storage,
+        )
+            .join()
+        {
             let mut position = &mut has_position.position;
-            if let Ok(dest) = position.get_safe_to_compass_direction((map_width, map_height), wants_to_move.compass_direction) {
+            if let Ok(dest) = position.get_safe_to_compass_direction(
+                (map_width, map_height),
+                wants_to_move.compass_direction,
+            ) {
                 if map.get_tiletype_at_position(dest).is_walkable() {
                     position.x = dest.x;
                     position.y = dest.y;
@@ -35,8 +45,7 @@ impl<'a> System<'a> for Movement {
             if let Some(_is_player) = is_player_option {
                 satisfied.push(entity);
                 unsat_direction = Some(wants_to_move.compass_direction);
-            }
-            else {
+            } else {
                 unsatisfied.push(entity);
             }
         }
@@ -45,10 +54,9 @@ impl<'a> System<'a> for Movement {
         }
         if let Some(compass_direction) = unsat_direction {
             for entity in unsatisfied.iter() {
-                wants_to_move_storage.insert(*entity, WantsToMove {
-                    compass_direction,
-                })
-                .expect("Unable to insert movement.");
+                wants_to_move_storage
+                    .insert(*entity, WantsToMove { compass_direction })
+                    .expect("Unable to insert movement.");
             }
         }
     }
