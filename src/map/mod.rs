@@ -5,6 +5,8 @@ use crate::model::{idx_to_xy, xy_to_idx, Position};
 
 pub mod tile;
 use tile::*;
+pub mod tile_map;
+use tile_map::*;
 
 #[derive(Clone, Default, Debug, Deserialize, Serialize)]
 pub struct Map {
@@ -15,29 +17,10 @@ pub struct Map {
 }
 
 impl Map {
+
     pub fn new(width: usize, height: usize) -> Self {
         let length = width * height;
-        let mut tiles = vec![TileType::Floor; length];
-        for x in 0..width {
-            tiles[xy_to_idx(width, x, 0)] = TileType::Wall;
-            tiles[xy_to_idx(width, x, height - 1)] = TileType::Wall;
-        }
-        for y in 0..height {
-            tiles[xy_to_idx(width, 0, y)] = TileType::Wall;
-            tiles[xy_to_idx(width, width - 1, y)] = TileType::Wall;
-        }
-
-        let mut rng = rltk::RandomNumberGenerator::new();
-
-        for _i in 0..length / 10 {
-            let x = rng.roll_dice(1, (width - 1).try_into().unwrap()) as usize;
-            let y = rng.roll_dice(1, (height - 1).try_into().unwrap()) as usize;
-            let idx = xy_to_idx(width, x, y);
-            if idx != xy_to_idx(width, width / 2, height / 2) {
-                tiles[idx] = TileType::Wall;
-            }
-        }
-
+        let tiles = get_random_tile_map(width, height);
         Map {
             width: width,
             height: height,
@@ -73,4 +56,5 @@ impl Map {
     pub fn get_idx_as_xy(&self, idx: usize) -> (usize, usize) {
         idx_to_xy(self.width, idx)
     }
+
 }
