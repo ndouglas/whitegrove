@@ -1,6 +1,6 @@
 pub mod input;
-use input::*;
+pub use input::*;
 pub mod neuron;
-use neuron::*;
+pub use neuron::*;
 pub mod output;
-use output::*;
+pub use output::*;

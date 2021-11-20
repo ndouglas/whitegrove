@@ -1,4 +1,5 @@
 use serde::*;
+use std::fmt;
 
 #[derive(Copy, Clone, Debug, Deserialize, Hash, PartialEq, Serialize)]
 pub enum CompassDirection {
@@ -25,5 +26,11 @@ impl CompassDirection {
             Southwest => (-1, 1),
             West => (-1, 0),
         }
+    }
+}
+
+impl fmt::Display for CompassDirection {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

@@ -7,5 +7,6 @@ pub fn move_compass_direction(ecs: &mut World, entity: Entity, dir: CompassDirec
     ecs.write_storage::<WantsToMove>()
         .insert(entity, WantsToMove {
             compass_direction: dir,
-        });
+        })
+        .expect(format!("Could not move {:?} {}", entity, dir).as_str());
 }

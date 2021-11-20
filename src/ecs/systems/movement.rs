@@ -3,7 +3,6 @@ use specs::prelude::*;
 use crate::ecs::components::{HasPosition, WantsToMove};
 use crate::map::tile::TileTrait;
 use crate::map::Map;
-use crate::model::CompassDirection;
 
 pub struct Movement {}
 
