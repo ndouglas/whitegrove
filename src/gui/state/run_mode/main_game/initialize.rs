@@ -33,6 +33,7 @@ pub fn inject_mobs(ecs: &mut World) {
                     bg: RGB::named(rltk::BLACK),
                 },
             })
+            .with(WantsToMoveWest {})
             .build();
     }
 }

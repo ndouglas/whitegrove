@@ -26,9 +26,9 @@ impl Mode {
                 })
             }
             DoSomeStuff => {
+                ctx.cls();
                 let positions = ecs.read_storage::<HasPosition>();
                 let renderables = ecs.read_storage::<HasRenderable>();
-
                 for (pos, render) in (&positions, &renderables).join() {
                     ctx.set(
                         pos.position.x,
@@ -38,6 +38,7 @@ impl Mode {
                         render.renderable.glyph,
                     );
                 }
+                ctx.print(1, 1, &format!("FPS: {}", ctx.fps));
 
                 None
             }
