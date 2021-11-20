@@ -1,7 +1,7 @@
-use rltk::{Rltk};
+use rltk::Rltk;
 use serde::*;
 
-use crate::model::{ idx_to_xy, xy_to_idx, Position };
+use crate::model::{idx_to_xy, xy_to_idx, Position};
 
 pub mod tile;
 use tile::*;

@@ -24,11 +24,9 @@ lazy_static! {
     static ref WALL: Mutex<Wall> = Mutex::new(Wall {});
 }
 
-impl TileType {
-}
+impl TileType {}
 
 impl TileTrait for TileType {
-
     fn get_renderable(&self) -> Renderable {
         use TileType::*;
         match self {
@@ -44,5 +42,4 @@ impl TileTrait for TileType {
             Wall => WALL.lock().unwrap().is_walkable(),
         }
     }
-
 }

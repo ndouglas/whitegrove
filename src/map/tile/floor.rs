@@ -9,7 +9,6 @@ use crate::render::Renderable;
 pub struct Floor {}
 
 impl TileTrait for Floor {
-
     fn get_renderable(&self) -> Renderable {
         Renderable {
             glyph: to_cp437('.'),
@@ -21,5 +20,4 @@ impl TileTrait for Floor {
     fn is_walkable(&self) -> bool {
         true
     }
-
 }

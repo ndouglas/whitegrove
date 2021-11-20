@@ -7,7 +7,7 @@ use crate::model::*;
 use crate::render::*;
 
 pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
-    ecs.create_entity()
+    let player = ecs.create_entity()
         .with(HasPosition {
             position: Position { x: x, y: y },
         })
@@ -18,7 +18,9 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
                 bg: RGB::named(rltk::BLACK),
             },
         })
+        .with(IsPlayer {})
         .build();
+    ecs.insert(player);
 }
 
 pub fn inject_mobs(ecs: &mut World) {
