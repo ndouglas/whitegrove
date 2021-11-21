@@ -15,7 +15,7 @@ impl Wall {
         Wall {
             renderable: Renderable {
                 glyph: to_cp437('#'),
-                fg: RGB::from_f32(0., 1., 0.),
+                fg: RGB::from_f32(0.5, 0.5, 0.5),
                 bg: RGB::from_f32(0., 0., 0.),
             },
         }
