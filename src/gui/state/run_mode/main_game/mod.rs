@@ -8,7 +8,6 @@ pub mod player;
 use player::*;
 
 use crate::ecs::components::*;
-use crate::ecs::systems::run_systems;
 use crate::map::*;
 
 use super::RunMode;
@@ -49,10 +48,17 @@ impl Mode {
                 }
                 ctx.print(1, 1, &format!("FPS: {}", ctx.fps));
                 player_input(ecs, ctx);
-                run_systems(ecs);
-                ecs.maintain();
                 None
             }
         }
     }
+
+    pub fn should_maintain_ecs(self) -> bool {
+        use Mode::*;
+        match self {
+            Initialize => false,
+            DoSomeStuff => true,
+        }
+    }
+
 }

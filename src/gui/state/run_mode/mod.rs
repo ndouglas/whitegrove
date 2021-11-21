@@ -21,4 +21,12 @@ impl RunMode {
             MainGame { mode } => mode.tick(ecs, ctx),
         }
     }
+
+    pub fn should_maintain_ecs(self) -> bool {
+        use RunMode::*;
+        match self {
+            Initial => false,
+            MainGame { mode } => mode.should_maintain_ecs(),
+        }
+    }
 }
