@@ -41,10 +41,9 @@ impl<'a> System<'a> for Movement {
             let mut position = &mut has_position.position;
             match wants_to_move {
                 WantsToMove::CompassDirection { compass_direction } => {
-                    if let Ok(dest) = position.get_safe_to_compass_direction(
-                        (map_width, map_height),
-                        *compass_direction,
-                    ) {
+                    if let Ok(dest) = position
+                        .get_safe_to_compass_direction((map_width, map_height), *compass_direction)
+                    {
                         if map.get_tiletype_at_position(dest).is_walkable() {
                             position.x = dest.x;
                             position.y = dest.y;
@@ -57,12 +56,11 @@ impl<'a> System<'a> for Movement {
                             set_move_randomly.push(entity);
                         }
                     }
-                },
+                }
                 WantsToMove::Randomly { ref mut duration } => {
                     if *duration == 0 as usize {
                         set_move_compass_direction.push(entity);
-                    }
-                    else {
+                    } else {
                         *duration -= 1;
                         if let Ok(dest) = position.get_safe_to_compass_direction(
                             (map_width, map_height),
@@ -81,30 +79,28 @@ impl<'a> System<'a> for Movement {
                             }
                         }
                     }
-                },
+                }
             }
             let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
             if let Some(_is_player) = is_player_option {
                 satisfied.push(entity);
             }
-
         }
         for entity in satisfied.iter() {
             wants_to_move_storage.remove(*entity);
         }
         for entity in set_move_randomly.iter() {
             wants_to_move_storage
-                .insert(
-                    *entity,
-                    WantsToMove::Randomly { duration: 2 },
-                )
+                .insert(*entity, WantsToMove::Randomly { duration: 2 })
                 .expect("Unable to insert movement.");
         }
         for entity in set_move_compass_direction.iter() {
             wants_to_move_storage
                 .insert(
                     *entity,
-                    WantsToMove::CompassDirection { compass_direction:CompassDirection::get_random() },
+                    WantsToMove::CompassDirection {
+                        compass_direction: CompassDirection::get_random(),
+                    },
                 )
                 .expect("Unable to insert movement.");
         }
