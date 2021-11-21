@@ -5,7 +5,7 @@ pub mod run_mode;
 pub use run_mode::*;
 
 use crate::ecs::components::register_components;
-use crate::ecs::dispatcher::{ get_new_dispatcher, UnifiedDispatcher };
+use crate::ecs::dispatcher::{get_new_dispatcher, UnifiedDispatcher};
 
 pub struct State {
     run_mode: RunMode,
@@ -20,7 +20,7 @@ impl State {
         State {
             ecs: ecs,
             run_mode: RunMode::Initial,
-            dispatcher: get_new_dispatcher()
+            dispatcher: get_new_dispatcher(),
         }
     }
 

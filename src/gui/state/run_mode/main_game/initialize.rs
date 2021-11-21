@@ -20,14 +20,34 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
             viewshed: Viewshed::new(10),
         })
         .with(IsPlayer {})
+        .with(HasName {
+            name: "Player".to_string(),
+        })
         .build();
     ecs.insert(player);
 }
 
 pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
-    for _i in 0..500 {
+    for _i in 0..2000 {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_center_xy();
+        let roll = random::roll_dice(1, 3);
+        let renderable;
+        let name;
+        match roll {
+            1 => {
+                renderable = RenderableFactory::Orc.create();
+                name = "Orc";
+            }
+            2 => {
+                renderable = RenderableFactory::Goblin.create();
+                name = "Goblin";
+            }
+            _ => {
+                renderable = RenderableFactory::Idiot.create();
+                name = "Idiot";
+            }
+        }
         ecs.create_entity()
             .with(HasPosition {
                 position: Position {
@@ -36,13 +56,16 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
                 },
             })
             .with(HasRenderable {
-                renderable: RenderableFactory::Monster.create(),
+                renderable: renderable,
             })
             .with(HasViewshed {
                 viewshed: Viewshed::new(8),
             })
             .with(WantsToMove {
                 compass_direction: CompassDirection::West,
+            })
+            .with(HasName {
+                name: name.to_string(),
             })
             .build();
     }

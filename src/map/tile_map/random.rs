@@ -1,5 +1,5 @@
 use crate::map::TileType;
-use crate::model::{ xy_to_idx, Rectangle };
+use crate::model::{xy_to_idx, Rectangle};
 use crate::random;
 
 pub fn add_borders_to_tile_map(tiles: &mut Vec<TileType>, width: usize, height: usize) {

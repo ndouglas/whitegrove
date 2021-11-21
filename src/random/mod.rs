@@ -15,6 +15,11 @@ pub fn roll_dice(n: i32, die_type: i32) -> i32 {
     RNG.lock().unwrap().roll_dice(n, die_type)
 }
 
-pub fn range<T: Add<Output = T> + Sub<Output = T> + Copy + PartialEq + PartialOrd + SampleUniform>(min: T, max: T) -> T {
+pub fn range<
+    T: Add<Output = T> + Sub<Output = T> + Copy + PartialEq + PartialOrd + SampleUniform,
+>(
+    min: T,
+    max: T,
+) -> T {
     RNG.lock().unwrap().range(min, max)
 }

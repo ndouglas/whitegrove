@@ -50,9 +50,8 @@ impl<'a> System<'a> for Movement {
                     if let Some(has_viewshed) = &mut has_viewshed_option {
                         has_viewshed.viewshed.is_dirty = true;
                     }
-                }
-                else {
-                  unsatisfied.push(entity);
+                } else {
+                    unsatisfied.push(entity);
                 }
             }
             let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
@@ -65,7 +64,12 @@ impl<'a> System<'a> for Movement {
         }
         for entity in unsatisfied.iter() {
             wants_to_move_storage
-                .insert(*entity, WantsToMove { compass_direction: CompassDirection::get_random() })
+                .insert(
+                    *entity,
+                    WantsToMove {
+                        compass_direction: CompassDirection::get_random(),
+                    },
+                )
                 .expect("Unable to insert movement.");
         }
     }

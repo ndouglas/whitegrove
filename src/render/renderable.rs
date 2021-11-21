@@ -13,7 +13,9 @@ pub struct Renderable {
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Factory {
     Player,
-    Monster,
+    Idiot,
+    Orc,
+    Goblin,
 }
 
 impl Factory {
@@ -25,12 +27,24 @@ impl Factory {
                 fg: RGB::named(rltk::YELLOW),
                 bg: RGB::named(rltk::BLACK),
             },
-            Monster => {
-                Renderable {
-                    glyph: to_cp437('☺'),
-                    fg: RGB::from_u8(random::range(0, 255), random::range(0, 255), random::range(0, 255)),
-                    bg: RGB::named(rltk::BLACK),
-                }
+            Idiot => Renderable {
+                glyph: to_cp437('☺'),
+                fg: RGB::from_u8(
+                    random::range(0, 255),
+                    random::range(0, 255),
+                    random::range(0, 255),
+                ),
+                bg: RGB::named(rltk::BLACK),
+            },
+            Orc => Renderable {
+                glyph: to_cp437('o'),
+                fg: RGB::named(rltk::GREEN),
+                bg: RGB::named(rltk::BLACK),
+            },
+            Goblin => Renderable {
+                glyph: to_cp437('g'),
+                fg: RGB::named(rltk::LIGHT_GREEN),
+                bg: RGB::named(rltk::BLACK),
             },
         }
     }

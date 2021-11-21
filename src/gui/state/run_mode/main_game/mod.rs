@@ -60,5 +60,4 @@ impl Mode {
             DoSomeStuff => true,
         }
     }
-
 }

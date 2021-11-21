@@ -1,4 +1,4 @@
-use rltk::{ to_cp437, RGB };
+use rltk::{to_cp437, RGB};
 use serde::*;
 
 use super::TileTrait;

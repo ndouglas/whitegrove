@@ -9,7 +9,10 @@ pub fn get_filled_tile_map(width: usize, height: usize, tile: TileType) -> Vec<T
     vec![tile; length]
 }
 
-pub fn get_rooms_and_corridors_tile_map(width: usize, height: usize) -> (Vec<TileType>, Vec<Rectangle>) {
+pub fn get_rooms_and_corridors_tile_map(
+    width: usize,
+    height: usize,
+) -> (Vec<TileType>, Vec<Rectangle>) {
     let mut tile_map = get_filled_tile_map(width, height, TileType::Wall);
     let mut rooms: Vec<Rectangle> = Vec::new();
     const MAX_ROOMS: i32 = 20;
