@@ -1,4 +1,3 @@
-use super::super::*;
 use super::UnifiedDispatcher;
 use specs::prelude::*;
 
@@ -36,7 +35,6 @@ impl<'a> UnifiedDispatcher for SingleThreadedDispatcher<'a> {
             for sys in self.systems.iter_mut() {
                 sys.run_now(&*ecs);
             }
-            //crate::effects::run_effects_queue(&mut *ecs);
         }
     }
 }

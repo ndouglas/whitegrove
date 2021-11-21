@@ -1,5 +1,7 @@
-use rltk::{to_cp437, FontCharType, RGB, RandomNumberGenerator};
+use rltk::{to_cp437, FontCharType, RGB};
 use serde::*;
+
+use crate::random;
 
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Renderable {
@@ -24,10 +26,9 @@ impl Factory {
                 bg: RGB::named(rltk::BLACK),
             },
             Monster => {
-                let mut rng = RandomNumberGenerator::new();
                 Renderable {
                     glyph: to_cp437('☺'),
-                    fg: RGB::from_u8(rng.range(0, 255), rng.range(0, 255), rng.range(0, 255)),
+                    fg: RGB::from_u8(random::range(0, 255), random::range(0, 255), random::range(0, 255)),
                     bg: RGB::named(rltk::BLACK),
                 }
             },

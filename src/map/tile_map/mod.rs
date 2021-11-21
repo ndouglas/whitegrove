@@ -1,7 +1,7 @@
-use rltk::RandomNumberGenerator;
 use std::cmp::min;
 
 use crate::model::{get_dim_distance, xy_to_idx, Rectangle};
+use crate::random;
 
 use super::TileType;
 
@@ -22,10 +22,9 @@ pub fn add_random_walls_to_tile_map(
     height: usize,
     count: usize,
 ) {
-    let mut rng = rltk::RandomNumberGenerator::new();
     for _i in 0..count {
-        let x = rng.roll_dice(1, (width - 1).try_into().unwrap()) as usize;
-        let y = rng.roll_dice(1, (height - 1).try_into().unwrap()) as usize;
+        let x = random::roll_dice(1, (width - 1).try_into().unwrap()) as usize;
+        let y = random::roll_dice(1, (height - 1).try_into().unwrap()) as usize;
         let idx = xy_to_idx(width, x, y);
         if idx != xy_to_idx(width, width / 2, height / 2) {
             tiles[idx] = TileType::Wall;
@@ -49,15 +48,14 @@ pub fn get_filled_tile_map(width: usize, height: usize, tile: TileType) -> Vec<T
 pub fn get_rooms_and_corridors_tile_map(width: usize, height: usize) -> Vec<TileType> {
     let mut result = get_filled_tile_map(width, height, TileType::Wall);
     let mut rooms: Vec<Rectangle> = Vec::new();
-    let mut rng = RandomNumberGenerator::new();
     const MAX_ROOMS: i32 = 20;
     const MIN_SIZE: usize = 20;
     const MAX_SIZE: usize = 25;
     for _ in 0..MAX_ROOMS {
-        let w = rng.range(MIN_SIZE, MAX_SIZE);
-        let h = rng.range(MIN_SIZE, MAX_SIZE);
-        let x = (rng.roll_dice(1, (width - w - 1) as i32) - 1) as usize;
-        let y = (rng.roll_dice(1, (height - h - 1) as i32) - 1) as usize;
+        let w = random::range(MIN_SIZE, MAX_SIZE);
+        let h = random::range(MIN_SIZE, MAX_SIZE);
+        let x = (random::roll_dice(1, (width - w - 1) as i32) - 1) as usize;
+        let y = (random::roll_dice(1, (height - h - 1) as i32) - 1) as usize;
         let new_room = Rectangle::with_size((x, y), (w, h));
         let mut ok = true;
         for other_room in rooms.iter() {

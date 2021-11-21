@@ -24,7 +24,7 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
 }
 
 pub fn inject_mobs(ecs: &mut World) {
-    for i in 0..1000 {
+    for i in 0..2000 {
         ecs.create_entity()
             .with(HasPosition {
                 position: Position {
