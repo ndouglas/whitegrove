@@ -1,5 +1,5 @@
 use crate::map::TileType;
-use crate::model::xy_to_idx;
+use crate::model::{ xy_to_idx, Rectangle };
 use crate::random;
 
 pub fn add_borders_to_tile_map(tiles: &mut Vec<TileType>, width: usize, height: usize) {
@@ -29,10 +29,11 @@ pub fn add_random_walls_to_tile_map(
     }
 }
 
-pub fn get_random_tile_map(width: usize, height: usize) -> Vec<TileType> {
+pub fn get_random_tile_map(width: usize, height: usize) -> (Vec<TileType>, Vec<Rectangle>) {
     let length = width * height;
-    let mut result = vec![TileType::Floor; length];
-    add_borders_to_tile_map(&mut result, width, height);
-    add_random_walls_to_tile_map(&mut result, width, height, length / 10);
-    result
+    let mut tile_map = vec![TileType::Floor; length];
+    add_borders_to_tile_map(&mut tile_map, width, height);
+    add_random_walls_to_tile_map(&mut tile_map, width, height, length / 10);
+    let room = Rectangle::with_size((1, 1), (width - 1, height - 1));
+    (tile_map, vec![room; 1])
 }

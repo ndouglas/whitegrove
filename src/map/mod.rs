@@ -1,7 +1,7 @@
 use rltk::{Algorithm2D, BaseMap, Point, Rltk};
 use serde::*;
 
-use crate::model::{idx_to_xy, xy_to_idx, Position};
+use crate::model::{idx_to_xy, xy_to_idx, Position, Rectangle};
 
 pub mod tile;
 pub use tile::*;
@@ -16,18 +16,20 @@ pub struct Map {
     pub height: usize,
     pub length: usize,
     pub tiles: Vec<TileType>,
+    pub rooms: Vec<Rectangle>,
     pub revealed_tiles: Vec<bool>,
 }
 
 impl Map {
     pub fn new(width: usize, height: usize) -> Self {
         let length = width * height;
-        let tiles = get_random_tile_map(width, height);
+        let (tiles, rooms) = get_rooms_and_corridors_tile_map(width, height);
         Map {
             width: width,
             height: height,
             length: length,
             tiles: tiles,
+            rooms: rooms,
             revealed_tiles: vec![false; length],
         }
     }

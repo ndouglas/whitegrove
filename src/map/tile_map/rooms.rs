@@ -9,8 +9,8 @@ pub fn get_filled_tile_map(width: usize, height: usize, tile: TileType) -> Vec<T
     vec![tile; length]
 }
 
-pub fn get_rooms_and_corridors_tile_map(width: usize, height: usize) -> Vec<TileType> {
-    let mut result = get_filled_tile_map(width, height, TileType::Wall);
+pub fn get_rooms_and_corridors_tile_map(width: usize, height: usize) -> (Vec<TileType>, Vec<Rectangle>) {
+    let mut tile_map = get_filled_tile_map(width, height, TileType::Wall);
     let mut rooms: Vec<Rectangle> = Vec::new();
     const MAX_ROOMS: i32 = 20;
     const MIN_SIZE: usize = 20;
@@ -29,18 +29,18 @@ pub fn get_rooms_and_corridors_tile_map(width: usize, height: usize) -> Vec<Tile
             }
         }
         if ok {
-            fill_rectangle_of_tile_map(&new_room, &mut result, width, TileType::Floor);
+            fill_rectangle_of_tile_map(&new_room, &mut tile_map, width, TileType::Floor);
 
             if !rooms.is_empty() {
-                let r1c = new_room.get_center();
-                let r2c = rooms[rooms.len() - 1].get_center();
-                create_corridor(&mut result, width, r1c, r2c);
+                let r1c = new_room.get_center_xy();
+                let r2c = rooms[rooms.len() - 1].get_center_xy();
+                create_corridor(&mut tile_map, width, r1c, r2c);
             }
 
             rooms.push(new_room);
         }
     }
-    result
+    (tile_map, rooms)
 }
 
 pub fn fill_rectangle_of_tile_map(

@@ -4,6 +4,7 @@ use crate::ecs::components::*;
 use crate::ecs::resources::CompositeViewshed as CompositeViewshedResource;
 use crate::map::*;
 use crate::model::*;
+use crate::random;
 use crate::render::Factory as RenderableFactory;
 
 pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
@@ -23,13 +24,15 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
     ecs.insert(player);
 }
 
-pub fn inject_mobs(ecs: &mut World) {
-    for i in 0..200 {
+pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
+    for _i in 0..500 {
+        let room = rooms[random::range(0, rooms.len())];
+        let (spawn_x, spawn_y) = room.get_center_xy();
         ecs.create_entity()
             .with(HasPosition {
                 position: Position {
-                    x: (i + 1) * 5 % 126,
-                    y: (i + 1) * 5 % 126,
+                    x: spawn_x,
+                    y: spawn_y,
                 },
             })
             .with(HasRenderable {
@@ -45,13 +48,11 @@ pub fn inject_mobs(ecs: &mut World) {
     }
 }
 
-pub fn inject_new_map(ecs: &mut World, width: usize, height: usize) {
-    ecs.insert(Map::new(width, height));
-}
-
 pub fn initialize_world(ecs: &mut World, width: usize, height: usize) {
-    inject_new_map(ecs, width, height);
+    let map = Map::new(width, height);
+    let (spawn_x, spawn_y) = map.rooms[0].get_center_xy();
+    inject_player(ecs, spawn_x, spawn_y);
+    inject_mobs(ecs, &map.rooms);
+    ecs.insert(map);
     ecs.insert(CompositeViewshedResource::new());
-    inject_player(ecs, width / 2, height / 2);
-    inject_mobs(ecs);
 }
