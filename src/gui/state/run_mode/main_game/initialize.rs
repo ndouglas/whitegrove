@@ -61,9 +61,7 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
             .with(HasViewshed {
                 viewshed: Viewshed::new(8),
             })
-            .with(WantsToMove {
-                compass_direction: CompassDirection::West,
-            })
+            .with(WantsToMove::Randomly { duration: 5 })
             .with(HasName {
                 name: name.to_string(),
             })

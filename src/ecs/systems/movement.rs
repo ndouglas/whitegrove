@@ -29,7 +29,8 @@ impl<'a> System<'a> for Movement {
         let map_width = map.width;
         let map_height = map.height;
         let mut satisfied = vec![];
-        let mut unsatisfied = vec![];
+        let mut set_move_compass_direction = vec![];
+        let mut set_move_randomly = vec![];
         for (entity, wants_to_move, has_position) in (
             &entities,
             &mut wants_to_move_storage,
@@ -38,37 +39,72 @@ impl<'a> System<'a> for Movement {
             .join()
         {
             let mut position = &mut has_position.position;
-            if let Ok(dest) = position.get_safe_to_compass_direction(
-                (map_width, map_height),
-                wants_to_move.compass_direction,
-            ) {
-                if map.get_tiletype_at_position(dest).is_walkable() {
-                    position.x = dest.x;
-                    position.y = dest.y;
-                    let mut has_viewshed_option: Option<&mut HasViewshed> =
-                        has_viewshed_storage.get_mut(entity);
-                    if let Some(has_viewshed) = &mut has_viewshed_option {
-                        has_viewshed.viewshed.is_dirty = true;
+            match wants_to_move {
+                WantsToMove::CompassDirection { compass_direction } => {
+                    if let Ok(dest) = position.get_safe_to_compass_direction(
+                        (map_width, map_height),
+                        *compass_direction,
+                    ) {
+                        if map.get_tiletype_at_position(dest).is_walkable() {
+                            position.x = dest.x;
+                            position.y = dest.y;
+                            let mut has_viewshed_option: Option<&mut HasViewshed> =
+                                has_viewshed_storage.get_mut(entity);
+                            if let Some(has_viewshed) = &mut has_viewshed_option {
+                                has_viewshed.viewshed.is_dirty = true;
+                            }
+                        } else {
+                            set_move_randomly.push(entity);
+                        }
                     }
-                } else {
-                    unsatisfied.push(entity);
-                }
+                },
+                WantsToMove::Randomly { ref mut duration } => {
+                    if *duration == 0 as usize {
+                        set_move_compass_direction.push(entity);
+                    }
+                    else {
+                        *duration -= 1;
+                        if let Ok(dest) = position.get_safe_to_compass_direction(
+                            (map_width, map_height),
+                            CompassDirection::get_random(),
+                        ) {
+                            if map.get_tiletype_at_position(dest).is_walkable() {
+                                position.x = dest.x;
+                                position.y = dest.y;
+                                let mut has_viewshed_option: Option<&mut HasViewshed> =
+                                    has_viewshed_storage.get_mut(entity);
+                                if let Some(has_viewshed) = &mut has_viewshed_option {
+                                    has_viewshed.viewshed.is_dirty = true;
+                                }
+                            } else {
+                                set_move_randomly.push(entity);
+                            }
+                        }
+                    }
+                },
             }
             let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
             if let Some(_is_player) = is_player_option {
                 satisfied.push(entity);
             }
+
         }
         for entity in satisfied.iter() {
             wants_to_move_storage.remove(*entity);
         }
-        for entity in unsatisfied.iter() {
+        for entity in set_move_randomly.iter() {
             wants_to_move_storage
                 .insert(
                     *entity,
-                    WantsToMove {
-                        compass_direction: CompassDirection::get_random(),
-                    },
+                    WantsToMove::Randomly { duration: 5 },
+                )
+                .expect("Unable to insert movement.");
+        }
+        for entity in set_move_compass_direction.iter() {
+            wants_to_move_storage
+                .insert(
+                    *entity,
+                    WantsToMove::CompassDirection { compass_direction:CompassDirection::get_random() },
                 )
                 .expect("Unable to insert movement.");
         }
