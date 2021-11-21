@@ -28,7 +28,7 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
 }
 
 pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
-    for _i in 0..2000 {
+    for i in 0..2000 {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_center_xy();
         let roll = random::roll_dice(1, 3);
@@ -61,9 +61,9 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
             .with(HasViewshed {
                 viewshed: Viewshed::new(8),
             })
-            .with(WantsToMove::Randomly { duration: 5 })
+            .with(WantsToMove::Randomly { duration: 2 })
             .with(HasName {
-                name: name.to_string(),
+                name: format!("{} #{}", name, i),
             })
             .build();
     }

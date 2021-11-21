@@ -96,7 +96,7 @@ impl<'a> System<'a> for Movement {
             wants_to_move_storage
                 .insert(
                     *entity,
-                    WantsToMove::Randomly { duration: 5 },
+                    WantsToMove::Randomly { duration: 2 },
                 )
                 .expect("Unable to insert movement.");
         }
