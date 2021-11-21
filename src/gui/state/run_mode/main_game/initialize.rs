@@ -1,5 +1,6 @@
 use specs::prelude::*;
 
+use crate::combat::*;
 use crate::ecs::components::*;
 use crate::ecs::resources::CompositeViewshed as CompositeViewshedResource;
 use crate::map::*;
@@ -21,6 +22,9 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
         })
         .with(IsPlayer {})
         .with(OccupiesTile {})
+        .with(HasHitPoints {
+            hit_points: HitPoints::new(128),
+        })
         .with(HasName {
             name: "Player".to_string(),
         })
@@ -64,6 +68,9 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
             })
             .with(WantsToMove::Randomly { duration: 2 })
             .with(OccupiesTile {})
+            .with(HasHitPoints {
+                hit_points: HitPoints::new(32),
+            })
             .with(HasName {
                 name: format!("{} #{}", name, i),
             })

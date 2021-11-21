@@ -9,6 +9,7 @@ extern crate serde;
 extern crate specs;
 extern crate specs_derive;
 
+pub mod combat;
 pub mod commands;
 pub mod ecs;
 pub mod error;

@@ -52,9 +52,9 @@ pub fn fill_rectangle_of_tile_map(
     width: usize,
     tile: TileType,
 ) {
-    for y in rect.y1 + 1..=rect.y2 {
-        for x in rect.x1 + 1..=rect.x2 {
-            tiles[xy_to_idx(width, x.try_into().unwrap(), y.try_into().unwrap())] = tile;
+    for y in rect.y1 + 1..=rect.y2 as usize {
+        for x in rect.x1 + 1..=rect.x2 as usize {
+            tiles[xy_to_idx(width, (x, y))] = tile;
         }
     }
 }

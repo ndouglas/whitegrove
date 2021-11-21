@@ -19,6 +19,7 @@ impl<'a> System<'a> for CompositeOccupancy {
             .into_iter()
             .map(|(has_position, _occupies_tile)| &has_position.position)
             .collect();
-        map.set_occupied_tiles_from_positions(positions);
+        map.occupied_tiles.clear();
+        map.occupied_tiles.set_at_positions(positions, true);
     }
 }

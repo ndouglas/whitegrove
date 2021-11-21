@@ -13,7 +13,7 @@ pub fn idx_to_xy(width: usize, idx: usize) -> (usize, usize) {
     (x, y)
 }
 
-pub fn xy_to_idx(width: usize, x: usize, y: usize) -> usize {
+pub fn xy_to_idx(width: usize, (x, y): (usize, usize)) -> usize {
     y * width + x
 }
 

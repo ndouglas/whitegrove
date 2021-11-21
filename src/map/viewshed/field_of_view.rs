@@ -157,7 +157,7 @@ fn cast_light(
             let ay = viewer.y + say;
             let ax_usize: usize = ax.try_into().unwrap();
             let ay_usize: usize = ay.try_into().unwrap();
-            let idx = map.get_xy_as_idx(ax_usize, ay_usize);
+            let idx = map.get_xy_as_idx((ax_usize, ay_usize));
             if ax >= map_width || ay >= map_height {
                 continue;
             }

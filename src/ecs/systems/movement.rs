@@ -43,7 +43,7 @@ impl<'a> System<'a> for Movement {
                     if let Ok(dest) = position
                         .get_safe_to_compass_direction((map_width, map_height), *compass_direction)
                     {
-                        if map.is_exit_valid(dest.x, dest.y) {
+                        if map.is_exit_valid_xy((dest.x, dest.y)) {
                             position.x = dest.x;
                             position.y = dest.y;
                             let mut has_viewshed_option: Option<&mut HasViewshed> =
@@ -69,7 +69,7 @@ impl<'a> System<'a> for Movement {
                             (map_width, map_height),
                             CompassDirection::get_random(),
                         ) {
-                            if map.is_exit_valid(dest.x, dest.y) {
+                            if map.is_exit_valid_xy((dest.x, dest.y)) {
                                 position.x = dest.x;
                                 position.y = dest.y;
                                 let mut has_viewshed_option: Option<&mut HasViewshed> =

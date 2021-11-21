@@ -38,12 +38,20 @@ impl Factory {
             },
             Orc => Renderable {
                 glyph: to_cp437('o'),
-                fg: RGB::named(rltk::GREEN),
+                fg: RGB::from_u8(
+                    0,
+                    random::range(128, 192),
+                    0,
+                ),
                 bg: RGB::named(rltk::BLACK),
             },
             Goblin => Renderable {
                 glyph: to_cp437('g'),
-                fg: RGB::named(rltk::LIGHT_GREEN),
+                fg: RGB::from_u8(
+                    0,
+                    random::range(192, 255),
+                    0,
+                ),
                 bg: RGB::named(rltk::BLACK),
             },
         }

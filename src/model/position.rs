@@ -21,7 +21,7 @@ impl Position {
     }
 
     pub fn get_idx(&self, width: usize) -> usize {
-        xy_to_idx(width, self.x, self.y)
+        xy_to_idx(width, (self.x, self.y))
     }
 
     pub fn get_unsafe(&self) -> UnsafePosition {

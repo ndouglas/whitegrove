@@ -4,5 +4,7 @@ pub mod composite_viewshed;
 pub use composite_viewshed::*;
 pub mod movement;
 pub use movement::*;
+pub mod tile_entity_index;
+pub use tile_entity_index::*;
 pub mod visibility;
 pub use visibility::*;
