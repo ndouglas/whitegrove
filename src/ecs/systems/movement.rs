@@ -30,7 +30,6 @@ impl<'a> System<'a> for Movement {
         let map_height = map.height;
         let mut satisfied = vec![];
         let mut unsatisfied = vec![];
-        let mut unsat_direction: Option<CompassDirection> = None;
         for (entity, wants_to_move, has_position) in (
             &entities,
             &mut wants_to_move_storage,
@@ -52,24 +51,22 @@ impl<'a> System<'a> for Movement {
                         has_viewshed.viewshed.is_dirty = true;
                     }
                 }
+                else {
+                  unsatisfied.push(entity);
+                }
             }
             let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
             if let Some(_is_player) = is_player_option {
                 satisfied.push(entity);
-                unsat_direction = Some(wants_to_move.compass_direction);
-            } else {
-                unsatisfied.push(entity);
             }
         }
         for entity in satisfied.iter() {
             wants_to_move_storage.remove(*entity);
         }
-        if let Some(compass_direction) = unsat_direction {
-            for entity in unsatisfied.iter() {
-                wants_to_move_storage
-                    .insert(*entity, WantsToMove { compass_direction })
-                    .expect("Unable to insert movement.");
-            }
+        for entity in unsatisfied.iter() {
+            wants_to_move_storage
+                .insert(*entity, WantsToMove { compass_direction: CompassDirection::get_random() })
+                .expect("Unable to insert movement.");
         }
     }
 }

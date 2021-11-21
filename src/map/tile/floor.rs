@@ -1,8 +1,9 @@
+use rltk::{ to_cp437, RGB };
 use serde::*;
 
 use super::TileTrait;
 
-use crate::render::{Factory as RenderableFactory, Renderable};
+use crate::render::Renderable;
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Floor {
@@ -12,7 +13,11 @@ pub struct Floor {
 impl Floor {
     pub fn new() -> Self {
         Floor {
-            renderable: RenderableFactory::Floor.create(),
+            renderable: Renderable {
+                glyph: to_cp437('.'),
+                fg: RGB::from_f32(0.5, 0.5, 0.5),
+                bg: RGB::from_f32(0., 0., 0.),
+            },
         }
     }
 }

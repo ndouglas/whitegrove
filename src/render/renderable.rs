@@ -1,4 +1,4 @@
-use rltk::{to_cp437, FontCharType, RGB};
+use rltk::{to_cp437, FontCharType, RGB, RandomNumberGenerator};
 use serde::*;
 
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -12,8 +12,6 @@ pub struct Renderable {
 pub enum Factory {
     Player,
     Monster,
-    Floor,
-    Wall,
 }
 
 impl Factory {
@@ -25,20 +23,13 @@ impl Factory {
                 fg: RGB::named(rltk::YELLOW),
                 bg: RGB::named(rltk::BLACK),
             },
-            Monster => Renderable {
-                glyph: to_cp437('☺'),
-                fg: RGB::named(rltk::RED),
-                bg: RGB::named(rltk::BLACK),
-            },
-            Floor => Renderable {
-                glyph: to_cp437('.'),
-                fg: RGB::from_f32(0.5, 0.5, 0.5),
-                bg: RGB::from_f32(0., 0., 0.),
-            },
-            Wall => Renderable {
-                glyph: to_cp437('#'),
-                fg: RGB::from_f32(0., 1., 0.),
-                bg: RGB::from_f32(0., 0., 0.),
+            Monster => {
+                let mut rng = RandomNumberGenerator::new();
+                Renderable {
+                    glyph: to_cp437('☺'),
+                    fg: RGB::from_u8(rng.range(0, 255), rng.range(0, 255), rng.range(0, 255)),
+                    bg: RGB::named(rltk::BLACK),
+                }
             },
         }
     }

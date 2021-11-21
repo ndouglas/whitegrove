@@ -24,12 +24,12 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
 }
 
 pub fn inject_mobs(ecs: &mut World) {
-    for i in 0..100 {
+    for i in 0..1000 {
         ecs.create_entity()
             .with(HasPosition {
                 position: Position {
-                    x: (i + 1) * 5 % 128,
-                    y: (i + 1) * 5 % 128,
+                    x: (i + 1) * 5 % 126,
+                    y: (i + 1) * 5 % 126,
                 },
             })
             .with(HasRenderable {

@@ -1,3 +1,4 @@
+use rltk::RandomNumberGenerator;
 use serde::*;
 use std::fmt;
 
@@ -25,6 +26,21 @@ impl CompassDirection {
             South => (0, 1),
             Southwest => (-1, 1),
             West => (-1, 0),
+        }
+    }
+
+    pub fn get_random() -> Self {
+        use CompassDirection::*;
+        match RandomNumberGenerator::new().range(0, 8) {
+            0 => Northwest,
+            1 => North,
+            2 => Northeast,
+            3 => East,
+            4 => Southeast,
+            5 => South,
+            6 => Southwest,
+            7 => West,
+            _ => West,
         }
     }
 }
