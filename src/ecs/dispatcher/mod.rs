@@ -28,9 +28,10 @@ impl fmt::Display for Box<dyn UnifiedDispatcher + 'static> {
 }
 
 construct_dispatcher!(
-    (CompositeViewshed, "composite_viewshed", &[]),
+    (Movement, "movement", &[]),
+    (CompositeOccupancy, "composite_occupancy", &[]),
     (Visibility, "visibility", &[]),
-    (Movement, "movement", &[])
+    (CompositeViewshed, "composite_viewshed", &[])
 );
 
 pub fn get_new_dispatcher() -> Box<dyn UnifiedDispatcher + 'static> {

@@ -17,6 +17,7 @@ pub struct Map {
     pub length: usize,
     pub tiles: Vec<TileType>,
     pub rooms: Vec<Rectangle>,
+    pub occupied_tiles: Vec<bool>,
     pub revealed_tiles: Vec<bool>,
 }
 
@@ -30,6 +31,7 @@ impl Map {
             length: length,
             tiles: tiles,
             rooms: rooms,
+            occupied_tiles: vec![false; length],
             revealed_tiles: vec![false; length],
         }
     }
@@ -44,11 +46,36 @@ impl Map {
         }
     }
 
-    pub fn set_revealed_tiles_from_positions(&mut self, positions: Vec<&Position>) {
+    pub fn clear_occupied_tiles(&mut self) {
+        self.occupied_tiles = vec![false; self.length];
+    }
+
+    pub fn clear_revealed_tiles(&mut self) {
+        self.revealed_tiles = vec![false; self.length];
+    }
+
+    pub fn add_occupied_tiles_from_positions(&mut self, positions: Vec<&Position>) {
+        for position in positions.iter() {
+            let idx = self.get_xy_as_idx(position.x, position.y);
+            self.occupied_tiles[idx] = true;
+        }
+    }
+
+    pub fn set_occupied_tiles_from_positions(&mut self, positions: Vec<&Position>) {
+        self.clear_occupied_tiles();
+        self.add_occupied_tiles_from_positions(positions);
+    }
+
+    pub fn add_revealed_tiles_from_positions(&mut self, positions: Vec<&Position>) {
         for position in positions.iter() {
             let idx = self.get_xy_as_idx(position.x, position.y);
             self.revealed_tiles[idx] = true;
         }
+    }
+
+    pub fn set_revealed_tiles_from_positions(&mut self, positions: Vec<&Position>) {
+        self.clear_revealed_tiles();
+        self.add_revealed_tiles_from_positions(positions);
     }
 
     pub fn get_tiletype_at_idx(&self, idx: usize) -> TileType {
@@ -76,7 +103,10 @@ impl Map {
             return false;
         }
         let idx = self.get_xy_as_idx(x, y);
-        self.tiles[idx as usize].is_walkable()
+        if !self.tiles[idx as usize].is_walkable() {
+            return false;
+        }
+        !self.occupied_tiles[idx]
     }
 }
 

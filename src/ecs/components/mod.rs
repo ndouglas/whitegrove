@@ -11,6 +11,8 @@ pub mod has_viewshed;
 pub use has_viewshed::*;
 pub mod is_player;
 pub use is_player::*;
+pub mod occupies_tile;
+pub use occupies_tile::*;
 pub mod wants_to_move;
 pub use wants_to_move::*;
 
@@ -20,5 +22,6 @@ pub fn register_components(ecs: &mut World) {
     ecs.register::<HasRenderable>();
     ecs.register::<HasViewshed>();
     ecs.register::<IsPlayer>();
+    ecs.register::<OccupiesTile>();
     ecs.register::<WantsToMove>();
 }

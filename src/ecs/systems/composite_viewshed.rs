@@ -25,6 +25,6 @@ impl<'a> System<'a> for CompositeViewshed {
         let positions = (&composite_viewshed_resource.visible_positions)
             .into_iter()
             .collect();
-        map.set_revealed_tiles_from_positions(positions);
+        map.add_revealed_tiles_from_positions(positions);
     }
 }

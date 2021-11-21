@@ -20,6 +20,7 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
             viewshed: Viewshed::new(10),
         })
         .with(IsPlayer {})
+        .with(OccupiesTile {})
         .with(HasName {
             name: "Player".to_string(),
         })
@@ -62,6 +63,7 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
                 viewshed: Viewshed::new(8),
             })
             .with(WantsToMove::Randomly { duration: 2 })
+            .with(OccupiesTile {})
             .with(HasName {
                 name: format!("{} #{}", name, i),
             })
