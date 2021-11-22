@@ -4,7 +4,7 @@ use specs::prelude::*;
 pub mod run_mode;
 pub use run_mode::*;
 
-use crate::ecs::components::register_components;
+use crate::ecs::components::*;
 use crate::ecs::dispatcher::{get_new_dispatcher, UnifiedDispatcher};
 
 pub struct State {
@@ -24,9 +24,33 @@ impl State {
         }
     }
 
+    pub fn collect_garbage(&mut self) {
+        trace!("Collecting garbage.");
+        let mut dead: Vec<Entity> = Vec::new();
+        {
+            let has_hit_points_storage = self.ecs.read_storage::<HasHitPoints>();
+            let has_name_storage = self.ecs.read_storage::<HasName>();
+            let entities = self.ecs.entities();
+            for (entity, has_hit_points) in (&entities, &has_hit_points_storage).join() {
+                debug!("Searching for dead entities...");
+                if has_hit_points.hit_points.current < 1 {
+                    let has_name = has_name_storage.get(entity).unwrap();
+                    debug!("{} has died!", has_name.name);
+                    dead.push(entity);
+                }
+            }
+        }
+        for entity in dead {
+            debug!("Deleting entity {:?}.", entity);
+            self.ecs.delete_entity(entity).expect("Unable to delete");
+        }
+    }
+
     pub fn run_systems(&mut self) {
         if self.run_mode.should_maintain_ecs() {
             self.dispatcher.run_now(&mut self.ecs);
+            self.ecs.maintain();
+            self.collect_garbage();
             self.ecs.maintain();
         }
     }

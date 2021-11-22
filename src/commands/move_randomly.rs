@@ -3,7 +3,7 @@ use specs::prelude::*;
 use crate::ecs::components::*;
 use crate::model::*;
 
-pub fn move_compass_direction(ecs: &mut World, entity: Entity, dir: CompassDirection) {
+pub fn move_randomly(ecs: &mut World, entity: Entity, duration: usize) {
     if !ecs.entities().is_alive(entity) {
         error!("Entity {:?} cannot move because it is no longer alive.", entity);
         return;
@@ -11,8 +11,8 @@ pub fn move_compass_direction(ecs: &mut World, entity: Entity, dir: CompassDirec
     ecs.write_storage::<WantsToMove>()
         .insert(
             entity,
-            WantsToMove::CompassDirection {
-                compass_direction: dir,
+            WantsToMove::Randomly {
+                duration,
             },
         )
         .expect(format!("Could not move {:?} {}", entity, dir).as_str());

@@ -22,12 +22,12 @@ impl Viewshed {
         }
     }
 
-    pub fn contains(&self, pos: &Position) -> bool {
+    pub fn contains_position(&self, pos: &Position) -> bool {
         self.visible_positions.contains(pos)
     }
 
     pub fn contains_xy(&self, (x, y): (usize, usize)) -> bool {
-        self.contains(&Position { x, y })
+        self.contains_position(&Position { x, y })
     }
 
     pub fn recalculate(&mut self, pos: &Position, map: &Map) {

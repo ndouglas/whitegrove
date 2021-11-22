@@ -1,4 +1,5 @@
 use serde::*;
+use std::fmt;
 
 use crate::error::Error;
 
@@ -62,5 +63,11 @@ impl Position {
         self.get_unsafe()
             .get_to_compass_direction(dir)
             .get_safe((width, height))
+    }
+}
+
+impl fmt::Display for Position {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }

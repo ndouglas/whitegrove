@@ -1,5 +1,6 @@
 use serde::*;
 use std::convert::From;
+use std::fmt;
 
 use crate::error::Error;
 
@@ -71,5 +72,11 @@ impl From<Position> for UnsafePosition {
             x: item.x as i32,
             y: item.y as i32,
         }
+    }
+}
+
+impl fmt::Display for UnsafePosition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }

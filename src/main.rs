@@ -11,6 +11,7 @@ extern crate specs_derive;
 
 pub mod combat;
 pub mod commands;
+pub mod dice;
 pub mod ecs;
 pub mod error;
 pub mod gui;

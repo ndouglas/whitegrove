@@ -10,7 +10,6 @@ pub struct TileFlags {
 }
 
 impl TileFlags {
-
     pub fn new(width: usize, length: usize) -> Self {
         TileFlags {
             width: width,

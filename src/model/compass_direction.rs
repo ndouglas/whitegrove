@@ -14,7 +14,34 @@ pub enum CompassDirection {
     West,
 }
 
+fn clamp<T: PartialOrd>(input: T, min: T, max: T) -> T {
+    if input <= min {
+        min
+    } else if input >= max {
+        max
+    } else {
+        input
+    }
+}
+
 impl CompassDirection {
+    pub fn get_from_delta_xy((mut dx, mut dy): (i32, i32)) -> Self {
+        dx = clamp(dx, -1, 1);
+        dy = clamp(dy, -1, 1);
+        use CompassDirection::*;
+        match (dx, dy) {
+            (-1, -1) => Northwest,
+            (0, -1) => North,
+            (1, -1) => Northeast,
+            (1, 0) => East,
+            (1, 1) => Southeast,
+            (0, 1) => South,
+            (-1, 1) => Southwest,
+            (-1, 0) => West,
+            _ => West,
+        }
+    }
+
     pub fn get_delta_xy(&self) -> (i32, i32) {
         use CompassDirection::*;
         match self {

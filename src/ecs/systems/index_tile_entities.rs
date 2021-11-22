@@ -3,9 +3,9 @@ use specs::prelude::*;
 use crate::ecs::components::*;
 use crate::map::Map;
 
-pub struct TileEntityIndex {}
+pub struct IndexTileEntities {}
 
-impl<'a> System<'a> for TileEntityIndex {
+impl<'a> System<'a> for IndexTileEntities {
     type SystemData = (
         WriteExpect<'a, Map>,
         Entities<'a>,
@@ -16,7 +16,8 @@ impl<'a> System<'a> for TileEntityIndex {
         let (mut map, entities, has_position_storage) = data;
         map.tile_entities.clear();
         for (entity, has_position) in (&entities, &has_position_storage).join() {
-            map.tile_entities.add_at_position(has_position.position, entity);
+            map.tile_entities
+                .add_at_position(&has_position.position, entity);
         }
     }
 }

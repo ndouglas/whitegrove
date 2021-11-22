@@ -1,5 +1,5 @@
-pub mod compass;
-pub use compass::*;
+pub mod compass_direction;
+pub use compass_direction::*;
 pub mod position;
 pub use position::*;
 pub mod rectangle;

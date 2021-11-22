@@ -10,7 +10,6 @@ pub struct TileEntities {
 }
 
 impl TileEntities {
-
     pub fn new(width: usize, length: usize) -> Self {
         TileEntities {
             width: width,
@@ -65,7 +64,7 @@ impl TileEntities {
         self.add_at_idx(self.get_xy_as_idx((x, y)), entity);
     }
 
-    pub fn add_at_position(&mut self, position: Position, entity: Entity) {
+    pub fn add_at_position(&mut self, position: &Position, entity: Entity) {
         self.add_at_xy((position.x, position.y), entity);
     }
 
@@ -77,8 +76,7 @@ impl TileEntities {
         self.remove_at_idx(self.get_xy_as_idx((x, y)), entity);
     }
 
-    pub fn remove_at_position(&mut self, position: Position, entity: Entity) {
+    pub fn remove_at_position(&mut self, position: &Position, entity: Entity) {
         self.remove_at_xy((position.x, position.y), entity);
     }
-
 }

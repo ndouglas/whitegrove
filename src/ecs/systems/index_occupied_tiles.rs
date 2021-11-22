@@ -3,9 +3,9 @@ use specs::prelude::*;
 use crate::ecs::components::*;
 use crate::map::Map;
 
-pub struct CompositeOccupancy {}
+pub struct IndexOccupiedTiles {}
 
-impl<'a> System<'a> for CompositeOccupancy {
+impl<'a> System<'a> for IndexOccupiedTiles {
     type SystemData = (
         WriteExpect<'a, Map>,
         ReadStorage<'a, HasPosition>,

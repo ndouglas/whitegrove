@@ -1,5 +1,6 @@
 use serde::*;
 use std::collections::HashSet;
+use std::fmt;
 
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Rectangle {
@@ -46,5 +47,11 @@ impl Rectangle {
             }
         }
         result
+    }
+}
+
+impl fmt::Display for Rectangle {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "(({}, {}), ({}, {}))", self.x1, self.y1, self.x2, self.y2)
     }
 }

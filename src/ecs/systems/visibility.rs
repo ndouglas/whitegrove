@@ -14,14 +14,11 @@ impl<'a> System<'a> for Visibility {
 
     fn run(&mut self, data: Self::SystemData) {
         let (map, mut has_viewshed_storage, has_position_storage) = data;
-        for (has_viewshed, has_position) in
-            (&mut has_viewshed_storage, &has_position_storage).join()
+        for (has_viewshed, has_position) in (&mut has_viewshed_storage, &has_position_storage)
+            .join()
+            .filter(|(has_viewshed, _has_position)| has_viewshed.viewshed.is_dirty)
         {
-            let position = &has_position.position;
-            let viewshed = &mut has_viewshed.viewshed;
-            if viewshed.is_dirty {
-                viewshed.recalculate(position, &*map);
-            }
+            (&mut has_viewshed.viewshed).recalculate(&has_position.position, &*map);
         }
     }
 }

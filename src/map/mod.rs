@@ -1,6 +1,6 @@
-use rltk::{Algorithm2D, BaseMap, Point, Rltk};
+use rltk::{Algorithm2D, BaseMap, NavigationPath, Point, Rltk, a_star_search};
 
-use crate::model::{idx_to_xy, xy_to_idx, Position, Rectangle};
+use crate::model::{Position, Rectangle, idx_to_xy, xy_to_idx};
 
 pub mod tile;
 pub use tile::*;
@@ -10,6 +10,8 @@ pub mod tile_flags;
 pub use tile_flags::*;
 pub mod tile_map;
 pub use tile_map::*;
+pub mod tile_occupants;
+pub use tile_occupants::*;
 pub mod viewshed;
 pub use viewshed::*;
 
@@ -24,6 +26,7 @@ pub struct Map {
     pub revealed_tiles: TileFlags,
     pub combatable_tiles: TileFlags,
     pub tile_entities: TileEntities,
+    pub tile_occupants: TileOccupants,
 }
 
 impl Map {
@@ -40,6 +43,7 @@ impl Map {
             revealed_tiles: TileFlags::new(width, length),
             combatable_tiles: TileFlags::new(width, length),
             tile_entities: TileEntities::new(width, length),
+            tile_occupants: TileOccupants::new(width, length),
         }
     }
 
@@ -73,6 +77,14 @@ impl Map {
         idx_to_xy(self.width, idx)
     }
 
+    pub fn get_position_as_idx(&self, position: &Position) -> usize {
+        self.get_xy_as_idx((position.x, position.y))
+    }
+
+    pub fn get_idx_as_position(&self, idx: usize) -> Position {
+        Position::from_idx(self.width, idx)
+    }
+
     pub fn is_exit_valid_xy(&self, (x, y): (usize, usize)) -> bool {
         if x < 1 || x > self.width - 1 || y < 1 || y > self.height - 1 {
             return false;
@@ -83,6 +95,34 @@ impl Map {
         }
         !self.occupied_tiles.get_at_idx(idx)
     }
+
+    pub fn get_astar_path_idx(&mut self, idx1: usize, idx2: usize) -> NavigationPath {
+        a_star_search(idx1 as usize, idx2 as usize, self)
+    }
+
+    pub fn get_next_astar_step_idx(&mut self, idx1: usize, idx2: usize) -> Option<usize> {
+        let path = self.get_astar_path_idx(idx1, idx2);
+        if path.success && path.steps.len() > 1 {
+            Some(path.steps[1])
+        } else {
+            None
+        }
+    }
+
+    pub fn get_next_astar_step_xy(&mut self, xy1: (usize, usize), xy2: (usize, usize)) -> Option<(usize, usize)> {
+        match self.get_next_astar_step_idx(self.get_xy_as_idx(xy1), self.get_xy_as_idx(xy2)) {
+            None => None,
+            Some(idx) => Some(self.get_idx_as_xy(idx)),
+        }
+    }
+
+    pub fn get_next_astar_step_position(&mut self, position1: &Position, position2: &Position) -> Option<Position> {
+        match self.get_next_astar_step_idx(self.get_position_as_idx(position1), self.get_position_as_idx(position2)) {
+            None => None,
+            Some(idx) => Some(self.get_idx_as_position(idx)),
+        }
+    }
+
 }
 
 impl Algorithm2D for Map {

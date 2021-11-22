@@ -1,16 +1,16 @@
 use specs::prelude::*;
 
 use crate::ecs::components::*;
-use crate::ecs::resources::composite_viewshed::CompositeViewshed as CompositeViewshedResource;
+use crate::ecs::resources::composite_viewshed::CompositeViewshed;
 use crate::map::viewshed::Viewshed;
 use crate::map::Map;
 
-pub struct CompositeViewshed {}
+pub struct IndexRevealedTiles {}
 
-impl<'a> System<'a> for CompositeViewshed {
+impl<'a> System<'a> for IndexRevealedTiles {
     type SystemData = (
         WriteExpect<'a, Map>,
-        WriteExpect<'a, CompositeViewshedResource>,
+        WriteExpect<'a, CompositeViewshed>,
         ReadStorage<'a, HasViewshed>,
     );
 
