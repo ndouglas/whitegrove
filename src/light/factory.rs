@@ -22,9 +22,9 @@ impl Factory {
     pub fn create(self) -> Source {
         use Factory::*;
         match self {
-            Candle => Source::new(RGB::from_u8(255, 127, 0), 6, 64),
-            Torch => Source::new(RGB::from_u8(255, 127, 0), 10, 128),
-            Moss => Source::new(RGB::from_u8(173, 223, 173), 5, 32),
+            Candle => Source::new(RGB::from_u8(255, 127, 0), 6, 384),
+            Torch => Source::new(RGB::from_u8(255, 127, 0), 10, 512),
+            Moss => Source::new(RGB::from_u8(173, 223, 173), 5, 256),
             Random => Source::new(
                 RGB::from_u8(
                     random_range(0, 5) as u8 * 60,
@@ -32,7 +32,7 @@ impl Factory {
                     random_range(0, 5) as u8 * 60,
                 ),
                 random_range(4, 12),
-                random_range(32, 96),
+                random_range(128, 384),
             ),
         }
     }

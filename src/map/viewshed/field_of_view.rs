@@ -1,4 +1,5 @@
 use rltk::BaseMap;
+use std::collections::HashSet;
 use std::sync::Mutex;
 
 use crate::map::Map;
@@ -96,10 +97,10 @@ struct Viewer {
 pub fn field_of_view(x: i32, y: i32, radius: i32, map: &Map) -> Vec<Position> {
     let viewer = Viewer { x, y, radius };
 
-    let mut visible: Vec<Position> = Vec::new();
+    let mut visible: HashSet<Position> = HashSet::new();
 
     // The viewer's location is always visible
-    visible.push(Position::from_xy(
+    visible.insert(Position::from_xy(
         (x as usize, y as usize),
         (map.width, map.height),
     ));
@@ -108,11 +109,11 @@ pub fn field_of_view(x: i32, y: i32, radius: i32, map: &Map) -> Vec<Position> {
         cast_light(&mut visible, map, &viewer, 1, 1.0, 0.0, &transform);
     }
 
-    visible
+    visible.iter().cloned().collect()
 }
 
 fn cast_light(
-    visible: &mut Vec<Position>,
+    visible: &mut HashSet<Position>,
     map: &Map,
     viewer: &Viewer,
     row: i32,
@@ -163,7 +164,7 @@ fn cast_light(
             }
 
             if dx * dx + dy * dy < radius_sq {
-                visible.push(Position::from_xy(
+                visible.insert(Position::from_xy(
                     (ax_usize, ay_usize),
                     (map_width, map_height),
                 ));

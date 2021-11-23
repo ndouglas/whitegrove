@@ -10,3 +10,7 @@ lazy_static! {
 pub fn set_dimensions(width: usize, length: usize) {
     TILE_LIGHTING.lock().unwrap().set_dimensions(width, length);
 }
+
+pub fn set_backgrounds() {
+    TILE_LIGHTING.lock().unwrap().set_from_backgrounds();
+}

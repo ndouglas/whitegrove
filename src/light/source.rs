@@ -51,12 +51,13 @@ impl Source {
     pub fn transform_color_at(&self, color: RGB, source_position: &Position, lit_position: &Position) -> RGB {
         let intensity = self.intensity_at(source_position, lit_position);
         let multiplier = intensity as f64 / 512 as f64;
+        let my_color = self.color.clone();
         let red = get_f32_as_u8(color.r);
         let green = get_f32_as_u8(color.g);
         let blue = get_f32_as_u8(color.b);
-        let my_red = get_f32_as_u8(self.color.r);
-        let my_green = get_f32_as_u8(self.color.g);
-        let my_blue = get_f32_as_u8(self.color.b);
+        let my_red = get_f32_as_u8(my_color.r);
+        let my_green = get_f32_as_u8(my_color.g);
+        let my_blue = get_f32_as_u8(my_color.b);
         let r_diff = (my_red as i32 - red as i32).abs();
         let g_diff = (my_green as i32 - green as i32).abs();
         let b_diff = (my_blue as i32 - blue as i32).abs();

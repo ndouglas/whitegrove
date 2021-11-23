@@ -1,6 +1,7 @@
 use specs::prelude::*;
 
 use crate::ecs::components::*;
+use crate::effects::*;
 use crate::map::Map;
 use crate::model::CompassDirection;
 use crate::spatial_index::TILE_OCCUPANTS;
@@ -25,8 +26,8 @@ impl<'a> System<'a> for Movement {
             entities,
             has_name_storage,
             mut wants_to_move_storage,
-            mut has_position_storage,
-            mut has_viewshed_storage,
+            has_position_storage,
+            has_viewshed_storage,
             is_player_storage,
             mut has_melee_target_storage,
         ) = data;
@@ -222,14 +223,14 @@ impl<'a> System<'a> for Movement {
                 }
             }
         }
-        for (entity, destination) in actually_move.iter() {
-            let has_position = &mut has_position_storage.get_mut(*entity).unwrap();
-            has_position.position.set_from_position(destination);
-            let mut has_viewshed_option: Option<&mut HasViewshed> =
-                has_viewshed_storage.get_mut(*entity);
-            if let Some(has_viewshed) = &mut has_viewshed_option {
-                has_viewshed.viewshed.is_dirty = true;
-            }
+        for (entity, new_position) in actually_move.iter() {
+            enqueue_effect(
+                Some(*entity),
+                Effect::UpdatePosition { new_position: *new_position },
+                Target::Entity {
+                    target: *entity,
+                },
+            );
         }
         for entity in satisfied.iter() {
             debug!(

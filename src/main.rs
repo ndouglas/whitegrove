@@ -14,6 +14,7 @@ pub mod commands;
 pub mod dice;
 pub mod ecs;
 pub mod effects;
+pub mod entity;
 pub mod error;
 pub mod garbage_collector;
 pub mod gui;

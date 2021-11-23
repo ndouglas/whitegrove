@@ -1,7 +1,6 @@
 use specs::prelude::*;
 
 use crate::ecs::components::*;
-use crate::model::*;
 
 pub fn move_randomly(ecs: &mut World, entity: Entity, duration: usize) {
     if !ecs.entities().is_alive(entity) {
@@ -15,5 +14,5 @@ pub fn move_randomly(ecs: &mut World, entity: Entity, duration: usize) {
                 duration,
             },
         )
-        .expect(format!("Could not move {:?} {}", entity, dir).as_str());
+        .expect(format!("Could not move {:?} randomly.", entity).as_str());
 }

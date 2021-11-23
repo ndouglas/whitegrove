@@ -76,6 +76,16 @@ impl TileLighting {
         self.remove_at_xy((position.x, position.y));
     }
 
+    pub fn set_from_backgrounds(&mut self) {
+        for (idx, bg_option) in crate::spatial_index::TILE_BACKGROUNDS.lock().unwrap().vector.iter().enumerate() {
+            if let Some(bg) = bg_option {
+                self.vector[idx] = bg.clone();
+            } else {
+                self.remove_at_idx(idx);
+            }
+        }
+    }
+
     pub fn set_dimensions(&mut self, width: usize, length: usize) {
         self.width = width;
         self.length = length;

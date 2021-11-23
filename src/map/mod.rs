@@ -45,17 +45,12 @@ impl Map {
 
     pub fn draw(&self, ctx: &mut Rltk) {
         let revealed_tiles = REVEALED_TILES.lock().unwrap();
-        let tile_backgrounds = TILE_BACKGROUNDS.lock().unwrap();
         let tile_lighting = TILE_LIGHTING.lock().unwrap();
         for (idx, tile) in self.tiles.iter().enumerate() {
             let (x, y) = self.get_idx_as_xy(idx);
             if revealed_tiles.get_at_idx(idx) {
                 let renderable = tile.get_renderable();
-                let mut bg = renderable.bg;
-                bg = tile_lighting.get_at_idx(idx);
-                if let Some(rgb) = tile_backgrounds.get_at_idx(idx) {
-                    //bg = rgb;
-                }
+                let bg = tile_lighting.get_at_idx(idx);
                 ctx.set(x, y, renderable.fg, bg, renderable.glyph);
             }
         }

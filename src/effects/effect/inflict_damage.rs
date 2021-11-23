@@ -2,7 +2,8 @@ use rltk::{to_cp437, RGB};
 use specs::prelude::*;
 
 use crate::ecs::components::*;
-use crate::effects::{enqueue_effect, get_entity_position, Effect, Spawner, Target};
+use crate::effects::{enqueue_effect, Effect, Spawner, Target};
+use crate::entity::get_entity_position;
 use crate::particle::Lifetime as ParticleLifetime;
 use crate::random;
 use crate::render::Renderable;

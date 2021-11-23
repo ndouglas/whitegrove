@@ -87,6 +87,9 @@ pub fn inject_mobs(
                     },
                 },
             })
+            .with(HasLightSource {
+                light_source: LightSourceFactory::Random.create(),
+            })
             .with(HasName {
                 name: format!("{} #{}", name, i),
             })

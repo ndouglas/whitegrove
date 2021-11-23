@@ -9,6 +9,7 @@ use player::*;
 
 use crate::ecs::components::*;
 use crate::map::*;
+use crate::spatial_index::TILE_LIGHTING;
 
 use super::RunMode;
 
@@ -29,20 +30,21 @@ impl Mode {
                 })
             }
             DoSomeStuff => {
-                let mut entity_count = 0;
                 {
                     let map = ecs.fetch::<Map>();
                     map.draw(ctx);
                 }
+                let entity_count;
                 {
                     let has_position_storage = ecs.read_storage::<HasPosition>();
                     let has_renderable_storage = ecs.read_storage::<HasRenderable>();
+                    let tile_lighting = TILE_LIGHTING.lock().unwrap();
                     for (pos, render) in (&has_position_storage, &has_renderable_storage).join() {
                         ctx.set(
                             pos.position.x,
                             pos.position.y,
                             render.renderable.fg,
-                            render.renderable.bg,
+                            tile_lighting.get_at_position(&pos.position),
                             render.renderable.glyph,
                         );
                     }

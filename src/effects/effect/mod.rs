@@ -3,6 +3,7 @@ use specs::prelude::*;
 use std::fmt;
 
 use crate::particle::Lifetime as ParticleLifetime;
+use crate::model::Position;
 use crate::render::Renderable;
 use crate::spatial_index::TILE_ENTITIES;
 
@@ -12,8 +13,12 @@ pub mod display_tile_particle;
 pub use display_tile_particle::*;
 pub mod inflict_damage;
 pub use inflict_damage::*;
+pub mod update_position;
+pub use update_position::*;
 
-use super::{get_entity_position, Spawner};
+use crate::entity::get_entity_position;
+
+use super::Spawner;
 
 #[derive(Clone, Debug)]
 pub enum Effect {
@@ -27,6 +32,9 @@ pub enum Effect {
         renderable: Renderable,
         lifetime: ParticleLifetime,
     },
+    UpdatePosition {
+        new_position: Position,
+    },
 }
 
 impl Effect {
@@ -34,6 +42,7 @@ impl Effect {
         use Effect::*;
         match self {
             Damage { .. } => true,
+            UpdatePosition { .. } => true,
             _ => false,
         }
     }
@@ -64,6 +73,7 @@ impl Effect {
                     display_tile_particle(ecs, spawner, position.idx);
                 }
             }
+            UpdatePosition { .. } => update_position(ecs, spawner, target),
             _ => {}
         }
     }
