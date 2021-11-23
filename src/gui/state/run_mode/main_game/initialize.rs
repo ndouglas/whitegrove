@@ -97,11 +97,59 @@ pub fn inject_mobs(
     }
 }
 
+pub fn inject_moss(
+  ecs: &mut World,
+  rooms: &Vec<Rectangle>,
+  count: usize,
+  (width, height): (usize, usize),
+) {
+    for i in 0..count {
+        let room = rooms[random::range(0, rooms.len())];
+        let (spawn_x, spawn_y) = room.get_random_xy();
+        ecs.create_entity()
+            .with(HasPosition {
+                position: Position::from_xy((spawn_x, spawn_y), (width, height)),
+            })
+            .with(HasRenderable {
+                renderable: RenderableFactory::Moss.create(),
+            })
+            .with(HasLightSource {
+                light_source: LightSourceFactory::Moss.create(),
+            })
+            .with(HasName {
+                name: format!("Moss #{}", i),
+            })
+            .build();
+    }
+}
+
+pub fn inject_moss_seeds(
+  ecs: &mut World,
+  rooms: &Vec<Rectangle>,
+  count: usize,
+  (width, height): (usize, usize),
+) {
+    for i in 0..count {
+        let room = rooms[random::range(0, rooms.len())];
+        let (spawn_x, spawn_y) = room.get_random_xy();
+        ecs.create_entity()
+            .with(HasPosition {
+                position: Position::from_xy((spawn_x, spawn_y), (width, height)),
+            })
+            .with(HasName {
+                name: format!("Moss #{}", i),
+            })
+            .build();
+    }
+}
+
 pub fn initialize_world(ecs: &mut World, width: usize, height: usize) {
     let map = Map::new(width, height);
     let (spawn_x, spawn_y) = map.rooms[0].get_center_xy();
     inject_player(ecs, (spawn_x, spawn_y), (width, height));
     inject_mobs(ecs, &map.rooms, 5, (width, height));
+    inject_moss(ecs, &map.rooms, 250, (width, height));
+    inject_moss_seeds(ecs, &map.rooms, 172, (width, height));
     ecs.insert(map);
     ecs.insert(ParticleBuilder::new());
 }

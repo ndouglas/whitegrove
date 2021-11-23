@@ -17,6 +17,7 @@ pub enum Factory {
     Idiot,
     Orc,
     Goblin,
+    Moss,
 }
 
 impl Factory {
@@ -50,6 +51,12 @@ impl Factory {
                 fg: RGB::from_u8(0, random::range(192, 255), 0),
                 bg: RGB::named(rltk::BLACK),
                 render_order: 0,
+            },
+            Moss => Renderable {
+                glyph: to_cp437('#'),
+                fg: RGB::from_u8(173, random::range(223, 255), 173),
+                bg: RGB::named(rltk::BLACK),
+                render_order: i32::MAX,
             },
         }
     }

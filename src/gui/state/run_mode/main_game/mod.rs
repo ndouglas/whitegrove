@@ -9,7 +9,7 @@ use player::*;
 
 use crate::ecs::components::*;
 use crate::map::*;
-use crate::spatial_index::TILE_LIGHTING;
+use crate::spatial_index::{ REVEALED_TILES, TILE_LIGHTING };
 
 use super::RunMode;
 
@@ -39,14 +39,17 @@ impl Mode {
                     let has_position_storage = ecs.read_storage::<HasPosition>();
                     let has_renderable_storage = ecs.read_storage::<HasRenderable>();
                     let tile_lighting = TILE_LIGHTING.lock().unwrap();
+                    let revealed_tiles = REVEALED_TILES.lock().unwrap();
                     for (pos, render) in (&has_position_storage, &has_renderable_storage).join() {
-                        ctx.set(
-                            pos.position.x,
-                            pos.position.y,
-                            render.renderable.fg,
-                            tile_lighting.get_at_position(&pos.position),
-                            render.renderable.glyph,
-                        );
+                        if revealed_tiles.get_at_position(&pos.position) {
+                            ctx.set(
+                                pos.position.x,
+                                pos.position.y,
+                                render.renderable.fg,
+                                tile_lighting.get_at_position(&pos.position),
+                                render.renderable.glyph,
+                            );
+                        }
                     }
                 }
                 {

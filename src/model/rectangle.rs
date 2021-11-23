@@ -2,6 +2,8 @@ use serde::*;
 use std::collections::HashSet;
 use std::fmt;
 
+use crate::random;
+
 #[derive(Copy, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Rectangle {
     pub x1: usize,
@@ -37,6 +39,12 @@ impl Rectangle {
 
     pub fn get_center_xy(&self) -> (usize, usize) {
         ((self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2)
+    }
+
+    pub fn get_random_xy(&self) -> (usize, usize) {
+        let all_xy: Vec<(usize, usize)> = self.get_all_xy().into_iter().collect();
+        let index = random::range(0, all_xy.len());
+        all_xy[index]
     }
 
     pub fn get_all_xy(&self) -> HashSet<(usize, usize)> {
