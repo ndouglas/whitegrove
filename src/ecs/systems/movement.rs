@@ -30,8 +30,6 @@ impl<'a> System<'a> for Movement {
             is_player_storage,
             mut has_melee_target_storage,
         ) = data;
-        let map_width = map.width;
-        let map_height = map.height;
         let mut satisfied = vec![];
         let mut set_move_compass_direction = vec![];
         let mut set_move_randomly = vec![];
@@ -49,7 +47,7 @@ impl<'a> System<'a> for Movement {
             match wants_to_move {
                 WantsToMove::CompassDirection { compass_direction } => {
                     if let Ok(destination) = position
-                        .get_safe_to_compass_direction((map_width, map_height), *compass_direction)
+                        .get_to_compass_direction(*compass_direction)
                     {
                         if let Some(occupant) =
                             TILE_OCCUPANTS.lock().unwrap().get_at_position(&destination)
@@ -111,8 +109,7 @@ impl<'a> System<'a> for Movement {
                     } else {
                         *duration -= 1;
                         let random_direction = CompassDirection::get_random();
-                        if let Ok(destination) = position.get_safe_to_compass_direction(
-                            (map_width, map_height),
+                        if let Ok(destination) = position.get_to_compass_direction(
                             random_direction,
                         ) {
                             if map.is_exit_valid_xy((destination.x, destination.y)) {
@@ -160,8 +157,7 @@ impl<'a> System<'a> for Movement {
                                     let target_position = &has_target_position.position;
                                     if has_viewshed.viewshed.contains_position(&target_position) {
                                         let next_position_result = position
-                                            .get_safe_toward_position(
-                                                (map_width, map_height),
+                                            .get_toward_position(
                                                 &target_position,
                                             );
                                         if let Ok(next_move_position) = next_position_result {

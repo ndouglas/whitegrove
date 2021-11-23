@@ -2,19 +2,32 @@ use rltk::RGB;
 use specs::prelude::*;
 use std::fmt;
 
+use crate::model::Position;
+use crate::render::Renderable;
 use crate::spatial_index::TILE_ENTITIES;
 
 pub mod blood_spatter;
 pub use blood_spatter::*;
 pub mod inflict_damage;
 pub use inflict_damage::*;
+pub mod particle;
+pub use particle::*;
 
 use super::Spawner;
 
 #[derive(Clone, Debug)]
 pub enum Effect {
-    Damage { amount: i32 },
-    BloodSpatter { color: RGB },
+    Damage {
+        amount: i32,
+    },
+    BloodSpatter {
+        color: RGB,
+    },
+    Particle {
+        position: Position,
+        renderable: Renderable,
+        lifespan: f32,
+    },
 }
 
 impl Effect {
@@ -38,6 +51,7 @@ impl Effect {
         use Effect::*;
         match self {
             BloodSpatter { .. } => blood_spatter(ecs, spawner, idx),
+            Particle { .. } => particle(ecs, spawner, idx),
             _ => {}
         }
     }

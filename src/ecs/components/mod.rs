@@ -11,6 +11,8 @@ pub mod has_melee_weapon;
 pub use has_melee_weapon::*;
 pub mod has_name;
 pub use has_name::*;
+pub mod has_particle_lifetime;
+pub use has_particle_lifetime::*;
 pub mod has_position;
 pub use has_position::*;
 pub mod has_renderable;
@@ -30,6 +32,7 @@ pub fn register_components(ecs: &mut World) {
     ecs.register::<HasMeleeTarget>();
     ecs.register::<HasMeleeWeapon>();
     ecs.register::<HasName>();
+    ecs.register::<HasParticleLifetime>();
     ecs.register::<HasPosition>();
     ecs.register::<HasRenderable>();
     ecs.register::<HasViewshed>();

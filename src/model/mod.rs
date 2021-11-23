@@ -4,8 +4,6 @@ pub mod position;
 pub use position::*;
 pub mod rectangle;
 pub use rectangle::*;
-pub mod unsafe_position;
-pub use unsafe_position::*;
 
 pub fn idx_to_xy(width: usize, idx: usize) -> (usize, usize) {
     let x = idx % width;

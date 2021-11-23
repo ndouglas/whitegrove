@@ -8,11 +8,11 @@ use crate::model::*;
 use crate::random;
 use crate::render::Factory as RenderableFactory;
 
-pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
+pub fn inject_player(ecs: &mut World, (x, y): (usize, usize), (width, height):(usize, usize)) {
     let player = ecs
         .create_entity()
         .with(HasPosition {
-            position: Position { x: x, y: y },
+            position: Position::from_xy((x, y), (width, height)),
         })
         .with(HasRenderable {
             renderable: RenderableFactory::Player.create(),
@@ -32,7 +32,7 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
     ecs.insert(player);
 }
 
-pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>, count: usize) {
+pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>, count: usize, (width, height): (usize, usize)) {
     for i in 0..count {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_center_xy();
@@ -55,10 +55,7 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>, count: usize) {
         }
         ecs.create_entity()
             .with(HasPosition {
-                position: Position {
-                    x: spawn_x,
-                    y: spawn_y,
-                },
+                position: Position::from_xy((spawn_x, spawn_y), (width, height)),
             })
             .with(HasRenderable {
                 renderable: renderable,
@@ -90,7 +87,7 @@ pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>, count: usize) {
 pub fn initialize_world(ecs: &mut World, width: usize, height: usize) {
     let map = Map::new(width, height);
     let (spawn_x, spawn_y) = map.rooms[0].get_center_xy();
-    inject_player(ecs, spawn_x, spawn_y);
-    inject_mobs(ecs, &map.rooms, 5);
+    inject_player(ecs, (spawn_x, spawn_y), (width, height));
+    inject_mobs(ecs, &map.rooms, 5, (width, height));
     ecs.insert(map);
 }

@@ -99,10 +99,7 @@ pub fn field_of_view(x: i32, y: i32, radius: i32, map: &Map) -> Vec<Position> {
     let mut visible: Vec<Position> = Vec::new();
 
     // The viewer's location is always visible
-    visible.push(Position {
-        x: x as usize,
-        y: y as usize,
-    });
+    visible.push(Position::from_xy((x as usize, y as usize), (map.width, map.height)));
 
     for transform in TRANSFORMS.lock().unwrap().iter() {
         cast_light(&mut visible, map, &viewer, 1, 1.0, 0.0, &transform);
@@ -128,8 +125,8 @@ fn cast_light(
 
     let mut start_slope = start_slope;
     let mut next_start_slope = start_slope;
-    let map_height = map.height as i32;
-    let map_width = map.width as i32;
+    let map_height = map.height;
+    let map_width = map.width;
 
     for i in row..=viewer.radius {
         let mut blocked = false;
@@ -158,15 +155,12 @@ fn cast_light(
             let ax_usize: usize = ax.try_into().unwrap();
             let ay_usize: usize = ay.try_into().unwrap();
             let idx = map.get_xy_as_idx((ax_usize, ay_usize));
-            if ax >= map_width || ay >= map_height {
+            if ax >= map_width.try_into().unwrap() || ay >= map_height.try_into().unwrap() {
                 continue;
             }
 
             if dx * dx + dy * dy < radius_sq {
-                visible.push(Position {
-                    x: ax_usize,
-                    y: ay_usize,
-                });
+                visible.push(Position::from_xy((ax_usize, ay_usize), (map_width, map_height)));
             }
 
             if blocked {

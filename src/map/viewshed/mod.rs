@@ -26,10 +26,6 @@ impl Viewshed {
         self.visible_positions.contains(pos)
     }
 
-    pub fn contains_xy(&self, (x, y): (usize, usize)) -> bool {
-        self.contains_position(&Position { x, y })
-    }
-
     pub fn recalculate(&mut self, pos: &Position, map: &Map) {
         self.visible_positions.clear();
         self.visible_positions = field_of_view(

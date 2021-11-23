@@ -57,11 +57,15 @@ impl Mode {
                 if ctx.fps >= 59.9 {
                     {
                         let rooms;
+                        let map_width;
+                        let map_height;
                         {
                             let map = ecs.fetch::<Map>();
+                            map_width = map.width;
+                            map_height = map.height;
                             rooms = map.rooms.clone();
                         }
-                        inject_mobs(ecs, &rooms, 1);
+                        inject_mobs(ecs, &rooms, 1, (map_width, map_height));
                     }
                 }
                 player_input(ecs, ctx);

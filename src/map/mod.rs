@@ -82,7 +82,7 @@ impl Map {
     }
 
     pub fn get_idx_as_position(&self, idx: usize) -> Position {
-        Position::from_idx(self.width, idx)
+        Position::from_idx(idx, (self.width, self.height))
     }
 
     pub fn is_exit_valid_xy(&self, (x, y): (usize, usize)) -> bool {

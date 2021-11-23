@@ -1,16 +1,19 @@
-use rltk::RGB;
+use rltk::{to_cp437, RGB};
 use specs::prelude::*;
 
 use crate::ecs::components::*;
-use crate::effects::{enqueue_effect, get_entity_position, Effect, Spawner, Target};
+use crate::effects::{
+    enqueue_effect, get_entity_idx, get_entity_position, Effect, Spawner, Target,
+};
 use crate::random;
+use crate::render::Renderable;
 
 pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
     if let Effect::Damage { amount } = spawner.effect {
         let mut has_hit_points_storage = ecs.write_storage::<HasHitPoints>();
         if let Some(has_hit_points) = has_hit_points_storage.get_mut(target) {
             has_hit_points.hit_points.current -= amount;
-            if let Some(idx) = get_entity_position(ecs, target) {
+            if let Some(position) = get_entity_position(ecs, target) {
                 let color_name = match random::range(0, 11) {
                     1 => rltk::INDIAN_RED,
                     2 => rltk::MEDIUMVIOLETRED,
@@ -24,12 +27,27 @@ pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
                     10 => rltk::DARKSALMON,
                     _ => rltk::DARK_RED,
                 };
+                if let Some(idx) = get_entity_idx(ecs, target) {
+                    enqueue_effect(
+                        None,
+                        Effect::BloodSpatter {
+                            color: RGB::named(color_name),
+                        },
+                        Target::Tile { index: idx },
+                    );
+                }
                 enqueue_effect(
                     None,
-                    Effect::BloodSpatter {
-                        color: RGB::named(color_name),
+                    Effect::Particle {
+                        position: position.clone(),
+                        renderable: Renderable {
+                            glyph: to_cp437('‼'),
+                            fg: RGB::named(rltk::ORANGE),
+                            bg: RGB::named(rltk::BLACK),
+                        },
+                        lifespan: 200.0,
                     },
-                    Target::Tile { index: idx },
+                    Target::Entity { target },
                 );
             }
         }
