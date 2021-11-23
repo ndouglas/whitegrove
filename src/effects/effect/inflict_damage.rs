@@ -2,9 +2,8 @@ use rltk::{to_cp437, RGB};
 use specs::prelude::*;
 
 use crate::ecs::components::*;
-use crate::effects::{
-    enqueue_effect, get_entity_idx, get_entity_position, Effect, Spawner, Target,
-};
+use crate::effects::{enqueue_effect, get_entity_position, Effect, Spawner, Target};
+use crate::particle::Lifetime as ParticleLifetime;
 use crate::random;
 use crate::render::Renderable;
 
@@ -27,25 +26,25 @@ pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
                     10 => rltk::DARKSALMON,
                     _ => rltk::DARK_RED,
                 };
-                if let Some(idx) = get_entity_idx(ecs, target) {
-                    enqueue_effect(
-                        None,
-                        Effect::BloodSpatter {
-                            color: RGB::named(color_name),
-                        },
-                        Target::Tile { index: idx },
-                    );
-                }
                 enqueue_effect(
                     None,
-                    Effect::Particle {
-                        position: position.clone(),
+                    Effect::BloodSpatter {
+                        color: RGB::named(color_name),
+                    },
+                    Target::Tile {
+                        index: position.idx,
+                    },
+                );
+                enqueue_effect(
+                    None,
+                    Effect::DisplayTileParticle {
                         renderable: Renderable {
                             glyph: to_cp437('‼'),
                             fg: RGB::named(rltk::ORANGE),
-                            bg: RGB::named(rltk::BLACK),
+                            bg: RGB::named(color_name),
+                            render_order: i32::MAX,
                         },
-                        lifespan: 200.0,
+                        lifetime: ParticleLifetime { lifetime: 200.0 },
                     },
                     Target::Entity { target },
                 );

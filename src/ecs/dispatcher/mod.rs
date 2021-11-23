@@ -35,7 +35,8 @@ construct_dispatcher!(
     (IndexOccupiedTiles, "index_occupied_tiles", &[]),
     (Visibility, "visibility", &[]),
     (IndexRevealedTiles, "index_revealed_tiles", &[]),
-    (MeleeCombat, "melee_combat", &[])
+    (MeleeCombat, "melee_combat", &[]),
+    (ParticleSpawner, "particle_spawner", &[])
 );
 
 pub fn get_new_dispatcher() -> Box<dyn UnifiedDispatcher + 'static> {

@@ -2,18 +2,18 @@ use rltk::RGB;
 use specs::prelude::*;
 use std::fmt;
 
-use crate::model::Position;
+use crate::particle::Lifetime as ParticleLifetime;
 use crate::render::Renderable;
 use crate::spatial_index::TILE_ENTITIES;
 
 pub mod blood_spatter;
 pub use blood_spatter::*;
+pub mod display_tile_particle;
+pub use display_tile_particle::*;
 pub mod inflict_damage;
 pub use inflict_damage::*;
-pub mod particle;
-pub use particle::*;
 
-use super::Spawner;
+use super::{get_entity_position, Spawner};
 
 #[derive(Clone, Debug)]
 pub enum Effect {
@@ -23,10 +23,9 @@ pub enum Effect {
     BloodSpatter {
         color: RGB,
     },
-    Particle {
-        position: Position,
+    DisplayTileParticle {
         renderable: Renderable,
-        lifespan: f32,
+        lifetime: ParticleLifetime,
     },
 }
 
@@ -51,7 +50,7 @@ impl Effect {
         use Effect::*;
         match self {
             BloodSpatter { .. } => blood_spatter(ecs, spawner, idx),
-            Particle { .. } => particle(ecs, spawner, idx),
+            DisplayTileParticle { .. } => display_tile_particle(ecs, spawner, idx),
             _ => {}
         }
     }
@@ -60,6 +59,11 @@ impl Effect {
         use Effect::*;
         match self {
             Damage { .. } => inflict_damage(ecs, spawner, target),
+            DisplayTileParticle { .. } => {
+                if let Some(position) = get_entity_position(ecs, target) {
+                    display_tile_particle(ecs, spawner, position.idx);
+                }
+            }
             _ => {}
         }
     }

@@ -46,9 +46,7 @@ impl<'a> System<'a> for Movement {
             let position = &has_position.position;
             match wants_to_move {
                 WantsToMove::CompassDirection { compass_direction } => {
-                    if let Ok(destination) = position
-                        .get_to_compass_direction(*compass_direction)
-                    {
+                    if let Ok(destination) = position.get_to_compass_direction(*compass_direction) {
                         if let Some(occupant) =
                             TILE_OCCUPANTS.lock().unwrap().get_at_position(&destination)
                         {
@@ -109,9 +107,8 @@ impl<'a> System<'a> for Movement {
                     } else {
                         *duration -= 1;
                         let random_direction = CompassDirection::get_random();
-                        if let Ok(destination) = position.get_to_compass_direction(
-                            random_direction,
-                        ) {
+                        if let Ok(destination) = position.get_to_compass_direction(random_direction)
+                        {
                             if map.is_exit_valid_xy((destination.x, destination.y)) {
                                 debug!(
                                     "{} wants to randomly move {} and it is possible.",
@@ -156,10 +153,8 @@ impl<'a> System<'a> for Movement {
                                 if let Some(has_target_position) = has_target_position_option {
                                     let target_position = &has_target_position.position;
                                     if has_viewshed.viewshed.contains_position(&target_position) {
-                                        let next_position_result = position
-                                            .get_toward_position(
-                                                &target_position,
-                                            );
+                                        let next_position_result =
+                                            position.get_toward_position(&target_position);
                                         if let Ok(next_move_position) = next_position_result {
                                             if map.is_exit_valid_xy((
                                                 next_move_position.x,
@@ -228,9 +223,8 @@ impl<'a> System<'a> for Movement {
             }
         }
         for (entity, destination) in actually_move.iter() {
-            let mut has_position = &mut has_position_storage.get_mut(*entity).unwrap();
-            has_position.position.x = destination.x;
-            has_position.position.y = destination.y;
+            let has_position = &mut has_position_storage.get_mut(*entity).unwrap();
+            has_position.position.set_from_position(destination);
             let mut has_viewshed_option: Option<&mut HasViewshed> =
                 has_viewshed_storage.get_mut(*entity);
             if let Some(has_viewshed) = &mut has_viewshed_option {

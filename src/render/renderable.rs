@@ -8,6 +8,7 @@ pub struct Renderable {
     pub glyph: FontCharType,
     pub fg: RGB,
     pub bg: RGB,
+    pub render_order: i32,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -26,6 +27,7 @@ impl Factory {
                 glyph: to_cp437('@'),
                 fg: RGB::named(rltk::YELLOW),
                 bg: RGB::named(rltk::BLACK),
+                render_order: 0,
             },
             Idiot => Renderable {
                 glyph: to_cp437('☺'),
@@ -35,16 +37,19 @@ impl Factory {
                     random::range(0, 255),
                 ),
                 bg: RGB::named(rltk::BLACK),
+                render_order: 0,
             },
             Orc => Renderable {
                 glyph: to_cp437('o'),
                 fg: RGB::from_u8(0, random::range(128, 192), 0),
                 bg: RGB::named(rltk::BLACK),
+                render_order: 0,
             },
             Goblin => Renderable {
                 glyph: to_cp437('g'),
                 fg: RGB::from_u8(0, random::range(192, 255), 0),
                 bg: RGB::named(rltk::BLACK),
+                render_order: 0,
             },
         }
     }

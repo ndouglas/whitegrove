@@ -17,6 +17,7 @@ impl Wall {
                 glyph: to_cp437('#'),
                 fg: RGB::from_f32(0.5, 0.5, 0.5),
                 bg: RGB::from_f32(0., 0., 0.),
+                render_order: i32::MIN,
             },
         }
     }

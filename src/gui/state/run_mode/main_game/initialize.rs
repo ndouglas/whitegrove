@@ -5,10 +5,11 @@ use crate::dice::Dice;
 use crate::ecs::components::*;
 use crate::map::*;
 use crate::model::*;
+use crate::particle::Builder as ParticleBuilder;
 use crate::random;
 use crate::render::Factory as RenderableFactory;
 
-pub fn inject_player(ecs: &mut World, (x, y): (usize, usize), (width, height):(usize, usize)) {
+pub fn inject_player(ecs: &mut World, (x, y): (usize, usize), (width, height): (usize, usize)) {
     let player = ecs
         .create_entity()
         .with(HasPosition {
@@ -32,7 +33,12 @@ pub fn inject_player(ecs: &mut World, (x, y): (usize, usize), (width, height):(u
     ecs.insert(player);
 }
 
-pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>, count: usize, (width, height): (usize, usize)) {
+pub fn inject_mobs(
+    ecs: &mut World,
+    rooms: &Vec<Rectangle>,
+    count: usize,
+    (width, height): (usize, usize),
+) {
     for i in 0..count {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_center_xy();
@@ -90,4 +96,5 @@ pub fn initialize_world(ecs: &mut World, width: usize, height: usize) {
     inject_player(ecs, (spawn_x, spawn_y), (width, height));
     inject_mobs(ecs, &map.rooms, 5, (width, height));
     ecs.insert(map);
+    ecs.insert(ParticleBuilder::new());
 }

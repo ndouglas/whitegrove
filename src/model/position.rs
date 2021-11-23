@@ -3,7 +3,7 @@ use std::fmt;
 
 use crate::error::Error;
 
-use super::{CompassDirection, get_dim_distance, idx_to_xy, xy_to_idx};
+use super::{get_dim_distance, idx_to_xy, xy_to_idx, CompassDirection};
 
 #[derive(Copy, Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Position {
@@ -36,14 +36,21 @@ impl Position {
         }
     }
 
-    pub fn get_idx(&self, width: usize) -> usize {
-        xy_to_idx(width, (self.x, self.y))
+    pub fn set_from_position(&mut self, position: &Position) {
+        self.x = position.x;
+        self.y = position.y;
+        self.idx = position.idx;
+        self.x_max = position.x_max;
+        self.y_max = position.y_max;
     }
 
     pub fn is_safe_to_delta_xy(&self, (dx, dy): (i32, i32)) -> bool {
         let ix = self.x as i32 + dx;
         let iy = self.y as i32 + dy;
-        ix >= 0 && ix < self.x_max.try_into().unwrap() && iy >= 0 && iy < self.y_max.try_into().unwrap()
+        ix >= 0
+            && ix < self.x_max.try_into().unwrap()
+            && iy >= 0
+            && iy < self.y_max.try_into().unwrap()
     }
 
     pub fn get_to_delta_xy(&self, (dx, dy): (i32, i32)) -> Result<Self, Error> {
@@ -68,7 +75,10 @@ impl Position {
                 self.y_max
             )))
         } else {
-            Ok(Position::from_xy((ix.try_into().unwrap(), iy.try_into().unwrap()), (self.x_max, self.y_max)))
+            Ok(Position::from_xy(
+                (ix.try_into().unwrap(), iy.try_into().unwrap()),
+                (self.x_max, self.y_max),
+            ))
         }
     }
 
@@ -81,23 +91,24 @@ impl Position {
     }
 
     pub fn get_delta_xy_to_position(&self, position: &Position) -> (i32, i32) {
-        (position.x as i32 - self.x as i32, position.y as i32 - self.y as i32)
+        (
+            position.x as i32 - self.x as i32,
+            position.y as i32 - self.y as i32,
+        )
     }
 
     pub fn get_compass_direction_to_position(&self, position: &Position) -> CompassDirection {
         CompassDirection::get_from_delta_xy(self.get_delta_xy_to_position(position))
     }
 
-    pub fn get_toward_position(
-        &self,
-        position: &Position,
-    ) -> Result<Position, Error> {
+    pub fn get_toward_position(&self, position: &Position) -> Result<Position, Error> {
         self.get_to_compass_direction(self.get_compass_direction_to_position(position))
     }
 
     pub fn is_neighboring_position(&self, position: &Position) -> bool {
         get_dim_distance(self.x, position.x) <= 1 && get_dim_distance(self.y, position.y) <= 1
     }
+
 }
 
 impl fmt::Display for Position {

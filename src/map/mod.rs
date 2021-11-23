@@ -65,8 +65,8 @@ impl Map {
         self.tiles[xy_to_idx(self.width, (x, y))]
     }
 
-    pub fn get_tiletype_at_position(&self, pos: Position) -> TileType {
-        self.get_tiletype_at_idx(pos.get_idx(self.width))
+    pub fn get_tiletype_at_position(&self, position: Position) -> TileType {
+        self.get_tiletype_at_idx(position.idx)
     }
 
     pub fn get_xy_as_idx(&self, (x, y): (usize, usize)) -> usize {

@@ -1,40 +1,20 @@
+use serde::*;
+
 use super::Request;
 
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Builder {
-    requests: Vec<Request>,
+    pub requests: Vec<Request>,
 }
 
 impl Builder {
     pub fn new() -> Self {
-        ParticleBuilder {
+        Builder {
             requests: Vec::new(),
         }
     }
 
-    pub fn add_request(&mut self, request: &Request) {
+    pub fn add_request(&mut self, request: Request) {
         self.requests.push(request);
-    }
-
-    pub fn add_request(&mut self, position: &Position, renderable: &Renderable, lifetime: f32) {
-        self.add_request(&Request {
-          position,
-          renderable,
-          lifetime,
-        });
-    }
-
-    pub fn add_request(&mut self, (x, y): (usize, usize), renderable: Renderable, lifetime: f32) {
-        self.add_request(Position {x, y}, renderable, lifetime);
-    }
-
-    pub fn add_request(&mut self, (x, y): (usize, usize), renderable: Renderable, lifetime: f32) {
-        self.requests.push(Request {
-            position: Position {
-              x,
-              y,
-            },
-            renderable,
-            lifetime,
-        });
     }
 }

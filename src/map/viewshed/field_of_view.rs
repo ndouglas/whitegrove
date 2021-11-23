@@ -99,7 +99,10 @@ pub fn field_of_view(x: i32, y: i32, radius: i32, map: &Map) -> Vec<Position> {
     let mut visible: Vec<Position> = Vec::new();
 
     // The viewer's location is always visible
-    visible.push(Position::from_xy((x as usize, y as usize), (map.width, map.height)));
+    visible.push(Position::from_xy(
+        (x as usize, y as usize),
+        (map.width, map.height),
+    ));
 
     for transform in TRANSFORMS.lock().unwrap().iter() {
         cast_light(&mut visible, map, &viewer, 1, 1.0, 0.0, &transform);
@@ -160,7 +163,10 @@ fn cast_light(
             }
 
             if dx * dx + dy * dy < radius_sq {
-                visible.push(Position::from_xy((ax_usize, ay_usize), (map_width, map_height)));
+                visible.push(Position::from_xy(
+                    (ax_usize, ay_usize),
+                    (map_width, map_height),
+                ));
             }
 
             if blocked {
