@@ -6,6 +6,8 @@ pub mod index_revealed_tiles;
 pub use index_revealed_tiles::*;
 pub mod index_tile_entities;
 pub use index_tile_entities::*;
+pub mod index_tile_lighting;
+pub use index_tile_lighting::*;
 pub mod index_tile_occupants;
 pub use index_tile_occupants::*;
 pub mod melee_combat;

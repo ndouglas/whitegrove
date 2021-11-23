@@ -5,6 +5,8 @@ pub mod has_ai;
 pub use has_ai::*;
 pub mod has_hit_points;
 pub use has_hit_points::*;
+pub mod has_light_source;
+pub use has_light_source::*;
 pub mod has_melee_target;
 pub use has_melee_target::*;
 pub mod has_melee_weapon;
@@ -29,6 +31,7 @@ pub use wants_to_move::*;
 pub fn register_components(ecs: &mut World) {
     ecs.register::<HasAi>();
     ecs.register::<HasHitPoints>();
+    ecs.register::<HasLightSource>();
     ecs.register::<HasMeleeTarget>();
     ecs.register::<HasMeleeWeapon>();
     ecs.register::<HasName>();

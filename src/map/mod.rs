@@ -11,6 +11,8 @@ pub mod tile_entities;
 pub use tile_entities::*;
 pub mod tile_flags;
 pub use tile_flags::*;
+pub mod tile_lighting;
+pub use tile_lighting::*;
 pub mod tile_map;
 pub use tile_map::*;
 pub mod tile_occupants;
@@ -44,13 +46,15 @@ impl Map {
     pub fn draw(&self, ctx: &mut Rltk) {
         let revealed_tiles = REVEALED_TILES.lock().unwrap();
         let tile_backgrounds = TILE_BACKGROUNDS.lock().unwrap();
+        let tile_lighting = TILE_LIGHTING.lock().unwrap();
         for (idx, tile) in self.tiles.iter().enumerate() {
             let (x, y) = self.get_idx_as_xy(idx);
             if revealed_tiles.get_at_idx(idx) {
                 let renderable = tile.get_renderable();
                 let mut bg = renderable.bg;
+                bg = tile_lighting.get_at_idx(idx);
                 if let Some(rgb) = tile_backgrounds.get_at_idx(idx) {
-                    bg = rgb;
+                    //bg = rgb;
                 }
                 ctx.set(x, y, renderable.fg, bg, renderable.glyph);
             }

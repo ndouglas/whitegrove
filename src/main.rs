@@ -17,6 +17,7 @@ pub mod effects;
 pub mod error;
 pub mod garbage_collector;
 pub mod gui;
+pub mod light;
 pub mod map;
 pub mod model;
 pub mod neural_net;

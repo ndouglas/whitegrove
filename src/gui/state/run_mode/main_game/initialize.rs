@@ -4,6 +4,7 @@ use crate::combat::*;
 use crate::dice::Dice;
 use crate::ecs::components::*;
 use crate::map::*;
+use crate::light::Factory as LightSourceFactory;
 use crate::model::*;
 use crate::particle::Builder as ParticleBuilder;
 use crate::random;
@@ -19,12 +20,15 @@ pub fn inject_player(ecs: &mut World, (x, y): (usize, usize), (width, height): (
             renderable: RenderableFactory::Player.create(),
         })
         .with(HasViewshed {
-            viewshed: Viewshed::new(10),
+            viewshed: Viewshed::new(15),
         })
         .with(IsPlayer {})
         .with(OccupiesTile {})
         .with(HasHitPoints {
             hit_points: HitPoints::new(12800000),
+        })
+        .with(HasLightSource {
+            light_source: LightSourceFactory::Torch.create(),
         })
         .with(HasName {
             name: "Player".to_string(),
@@ -67,7 +71,7 @@ pub fn inject_mobs(
                 renderable: renderable,
             })
             .with(HasViewshed {
-                viewshed: Viewshed::new(8),
+                viewshed: Viewshed::new(15),
             })
             .with(WantsToMove::Randomly { duration: 2 })
             .with(OccupiesTile {})

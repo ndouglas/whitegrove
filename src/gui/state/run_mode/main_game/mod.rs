@@ -29,6 +29,7 @@ impl Mode {
                 })
             }
             DoSomeStuff => {
+                let mut entity_count = 0;
                 {
                     let map = ecs.fetch::<Map>();
                     map.draw(ctx);
@@ -46,13 +47,17 @@ impl Mode {
                         );
                     }
                 }
-
+                {
+                    let entities = ecs.entities();
+                    let has_hit_points_storage = ecs.read_storage::<HasHitPoints>();
+                    entity_count = (&entities, &has_hit_points_storage).join().count();
+                }
                 ctx.print_color(
                     1,
                     1,
                     RGB::named(rltk::RED),
                     RGB::named(rltk::BLACK),
-                    &format!("FPS: {}", ctx.fps),
+                    &format!("FPS: {}   Entities: {}", ctx.fps, entity_count),
                 );
                 if ctx.fps >= 59.9 {
                     {

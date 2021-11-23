@@ -34,6 +34,7 @@ construct_dispatcher!(
     (IndexTileOccupants, "index_tile_occupants", &[]),
     (IndexOccupiedTiles, "index_occupied_tiles", &[]),
     (Visibility, "visibility", &[]),
+    (IndexTileLighting, "index_tile_lighting", &[]),
     (IndexRevealedTiles, "index_revealed_tiles", &[]),
     (MeleeCombat, "melee_combat", &[]),
     (ParticleSpawner, "particle_spawner", &[])
