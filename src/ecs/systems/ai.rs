@@ -17,7 +17,7 @@ impl<'a> System<'a> for Ai {
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
-            has_viewshed_storage,
+            _has_viewshed_storage,
             has_position_storage,
             has_ai_storage,
             mut wants_to_move_storage,

@@ -3,7 +3,6 @@ use specs::prelude::*;
 use crate::combat::*;
 use crate::dice::Dice;
 use crate::ecs::components::*;
-use crate::ecs::resources::CompositeViewshed as CompositeViewshedResource;
 use crate::map::*;
 use crate::model::*;
 use crate::random;
@@ -33,8 +32,8 @@ pub fn inject_player(ecs: &mut World, x: usize, y: usize) {
     ecs.insert(player);
 }
 
-pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>) {
-    for i in 0..2000 {
+pub fn inject_mobs(ecs: &mut World, rooms: &Vec<Rectangle>, count: usize) {
+    for i in 0..count {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_center_xy();
         let roll = random::roll_dice(1, 3);
@@ -92,7 +91,6 @@ pub fn initialize_world(ecs: &mut World, width: usize, height: usize) {
     let map = Map::new(width, height);
     let (spawn_x, spawn_y) = map.rooms[0].get_center_xy();
     inject_player(ecs, spawn_x, spawn_y);
-    inject_mobs(ecs, &map.rooms);
+    inject_mobs(ecs, &map.rooms, 5);
     ecs.insert(map);
-    ecs.insert(CompositeViewshedResource::new());
 }

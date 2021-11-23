@@ -3,6 +3,7 @@ use specs::prelude::*;
 use crate::ecs::components::*;
 use crate::map::Map;
 use crate::model::CompassDirection;
+use crate::spatial_index::TILE_OCCUPANTS;
 
 pub struct Movement {}
 
@@ -50,30 +51,42 @@ impl<'a> System<'a> for Movement {
                     if let Ok(destination) = position
                         .get_safe_to_compass_direction((map_width, map_height), *compass_direction)
                     {
-                        if let Some(occupant) = map.tile_occupants.get_at_position(&destination) {
+                        if let Some(occupant) =
+                            TILE_OCCUPANTS.lock().unwrap().get_at_position(&destination)
+                        {
                             let occupant_has_name_option = &has_name_storage.get(occupant);
                             match occupant_has_name_option {
                                 None => {
-                                  debug!("{} ({}) wants to move {} (to {}) but it is occupied by a dying entity ({:?}).", has_name.name, position, compass_direction, destination, occupant);
-                                },
+                                    debug!("{} ({}) wants to move {} (to {}) but it is occupied by a dying entity ({:?}).", has_name.name, position, compass_direction, destination, occupant);
+                                }
                                 Some(occupant_has_name) => {
-                                  debug!("{} ({}) wants to move {} (to {}) but it is occupied by {}.", has_name.name, position, compass_direction, destination, occupant_has_name.name);
-                                  has_melee_target_storage
-                                      .insert(
-                                          entity,
-                                          HasMeleeTarget {
-                                              melee_target: occupant,
-                                          },
-                                      )
-                                      .expect("Unable to insert has-melee-target.");
-                                  set_move_toward_target.push((entity, occupant));
-                                },
+                                    debug!("{} ({}) wants to move {} (to {}) but it is occupied by {}.", has_name.name, position, compass_direction, destination, occupant_has_name.name);
+                                    let is_player_option: Option<&IsPlayer> =
+                                        is_player_storage.get(entity);
+                                    if let None = is_player_option {
+                                        has_melee_target_storage
+                                            .insert(
+                                                entity,
+                                                HasMeleeTarget {
+                                                    melee_target: occupant,
+                                                },
+                                            )
+                                            .expect("Unable to insert has-melee-target.");
+                                    }
+                                    set_move_toward_target.push((entity, occupant));
+                                }
                             }
                         } else if map.is_exit_valid_xy((destination.x, destination.y)) {
-                            debug!("{} wants to move {} and it is possible.", has_name.name, compass_direction);
+                            debug!(
+                                "{} wants to move {} and it is possible.",
+                                has_name.name, compass_direction
+                            );
                             actually_move.push((entity, destination));
                         } else {
-                            debug!("{} wants to move {} but it is not a valid exit.", has_name.name, compass_direction);
+                            debug!(
+                                "{} wants to move {} but it is not a valid exit.",
+                                has_name.name, compass_direction
+                            );
                             let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
                             if let None = is_player_option {
                                 trace!("{} wants to move randomly.", has_name.name);
@@ -81,7 +94,10 @@ impl<'a> System<'a> for Movement {
                             }
                         }
                     } else {
-                        debug!("{} wants to move {} but it is not okay.", has_name.name, compass_direction);
+                        debug!(
+                            "{} wants to move {} but it is not okay.",
+                            has_name.name, compass_direction
+                        );
                     }
                     let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
                     if let Some(_is_player) = is_player_option {
@@ -100,47 +116,119 @@ impl<'a> System<'a> for Movement {
                             random_direction,
                         ) {
                             if map.is_exit_valid_xy((destination.x, destination.y)) {
-                                debug!("{} wants to randomly move {} and it is possible.", has_name.name, random_direction);
+                                debug!(
+                                    "{} wants to randomly move {} and it is possible.",
+                                    has_name.name, random_direction
+                                );
                                 actually_move.push((entity, destination));
                             } else {
                                 debug!("{} wants to move randomly now.", has_name.name);
                                 set_move_randomly.push(entity);
                             }
                         } else {
-                            debug!("{} wants to randomly move {} but it is not okay.", has_name.name, random_direction);
+                            debug!(
+                                "{} wants to randomly move {} but it is not okay.",
+                                has_name.name, random_direction
+                            );
                         }
                     }
-                },
+                }
                 WantsToMove::TowardTarget { target } => {
                     if !entities.is_alive(*target) {
-                        debug!("{} has a target, but it is dead.", has_name.name);
-                        set_move_randomly.push(entity);
+                        let is_player_option: Option<&IsPlayer> = is_player_storage.get(entity);
+                        if let None = is_player_option {
+                            debug!("{} has a target, but it is dead.", has_name.name);
+                            set_move_randomly.push(entity);
+                        }
                     } else {
                         let target_has_name_option = &has_name_storage.get(*target);
                         match target_has_name_option {
                             None => {
-                                debug!("{} is hunting a dying target ({:?}).", has_name.name, target);
-                            },
+                                debug!(
+                                    "{} is hunting a dying target ({:?}).",
+                                    has_name.name, target
+                                );
+                            }
                             Some(target_has_name) => {
-                                debug!("{} is hunting a living target ({}).", has_name.name, target_has_name.name);
+                                debug!(
+                                    "{} is hunting a living target ({}).",
+                                    has_name.name, target_has_name.name
+                                );
                                 let has_viewshed = &has_viewshed_storage.get(entity).unwrap();
                                 let has_target_position_option = has_position_storage.get(*target);
                                 if let Some(has_target_position) = has_target_position_option {
-                                    if has_viewshed.viewshed.contains_position(&has_target_position.position) {
-                                        if let Some(next_move_position) = map.get_next_astar_step_position(&position, &has_target_position.position) {
-                                            debug!("{} is approaching target at {}!", has_name.name, next_move_position);
-                                            actually_move.push((entity, next_move_position));
+                                    let target_position = &has_target_position.position;
+                                    if has_viewshed.viewshed.contains_position(&target_position) {
+                                        let next_position_result = position
+                                            .get_safe_toward_position(
+                                                (map_width, map_height),
+                                                &target_position,
+                                            );
+                                        if let Ok(next_move_position) = next_position_result {
+                                            if map.is_exit_valid_xy((
+                                                next_move_position.x,
+                                                next_move_position.y,
+                                            )) {
+                                                debug!(
+                                                    "{} is approaching target at {} directly!",
+                                                    has_name.name, next_move_position
+                                                );
+                                                actually_move.push((entity, next_move_position));
+                                            } else {
+                                                let astar_position_result = map
+                                                    .get_next_astar_step_position(
+                                                        &position,
+                                                        &target_position,
+                                                    );
+                                                if let Some(astar_position) = astar_position_result
+                                                {
+                                                    debug!(
+                                                        "{} is approaching target at {} via A*!",
+                                                        has_name.name, astar_position
+                                                    );
+                                                    actually_move.push((entity, astar_position));
+                                                } else {
+                                                    debug!("{} has a target, but can't find it via A*.", has_name.name);
+                                                    set_move_randomly.push(entity);
+                                                }
+                                            }
                                         } else {
-                                            debug!("{} has a target, but can't see it.", has_name.name);
+                                            let astar_position_result = map
+                                                .get_next_astar_step_position(
+                                                    &position,
+                                                    &target_position,
+                                                );
+                                            if let Some(astar_position) = astar_position_result {
+                                                debug!(
+                                                    "{} is approaching target at {} via A*!",
+                                                    has_name.name, astar_position
+                                                );
+                                                actually_move.push((entity, astar_position));
+                                            } else {
+                                                let is_player_option: Option<&IsPlayer> =
+                                                    is_player_storage.get(entity);
+                                                if let None = is_player_option {
+                                                    debug!("{} has a target, but can't find it via A*.", has_name.name);
+                                                    set_move_randomly.push(entity);
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        let is_player_option: Option<&IsPlayer> =
+                                            is_player_storage.get(entity);
+                                        if let None = is_player_option {
+                                            debug!(
+                                                "{} has a target, but can't see it.",
+                                                has_name.name
+                                            );
                                             set_move_randomly.push(entity);
                                         }
                                     }
                                 }
-                            },
+                            }
                         }
-
                     }
-                },
+                }
             }
         }
         for (entity, destination) in actually_move.iter() {
@@ -161,6 +249,10 @@ impl<'a> System<'a> for Movement {
             wants_to_move_storage.remove(*entity);
         }
         for entity in set_move_randomly.iter() {
+            let is_player_option: Option<&IsPlayer> = is_player_storage.get(*entity);
+            if let Some(_is_player) = is_player_option {
+                error!("wtf");
+            }
             debug!(
                 "{} will move randomly.",
                 has_name_storage.get(*entity).unwrap().name
@@ -190,12 +282,7 @@ impl<'a> System<'a> for Movement {
                 has_name_storage.get(*target).unwrap().name
             );
             wants_to_move_storage
-                .insert(
-                    *entity,
-                    WantsToMove::TowardTarget {
-                        target: *target,
-                    },
-                )
+                .insert(*entity, WantsToMove::TowardTarget { target: *target })
                 .expect("Unable to insert movement.");
         }
     }

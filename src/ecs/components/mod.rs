@@ -15,8 +15,6 @@ pub mod has_position;
 pub use has_position::*;
 pub mod has_renderable;
 pub use has_renderable::*;
-pub mod has_suffered_damage;
-pub use has_suffered_damage::*;
 pub mod has_viewshed;
 pub use has_viewshed::*;
 pub mod is_player;
@@ -34,7 +32,6 @@ pub fn register_components(ecs: &mut World) {
     ecs.register::<HasName>();
     ecs.register::<HasPosition>();
     ecs.register::<HasRenderable>();
-    ecs.register::<HasSufferedDamage>();
     ecs.register::<HasViewshed>();
     ecs.register::<IsPlayer>();
     ecs.register::<OccupiesTile>();

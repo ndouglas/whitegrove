@@ -1,7 +1,5 @@
 pub mod ai;
 pub use ai::*;
-pub mod damage;
-pub use damage::*;
 pub mod melee_combat;
 pub use melee_combat::*;
 pub mod movement;

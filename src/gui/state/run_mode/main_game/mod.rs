@@ -1,9 +1,9 @@
-use rltk::Rltk;
+use rltk::{Rltk, RGB};
 use serde::*;
 use specs::prelude::*;
 
 pub mod initialize;
-use initialize::initialize_world;
+use initialize::{initialize_world, inject_mobs};
 pub mod player;
 use player::*;
 
@@ -46,7 +46,24 @@ impl Mode {
                         );
                     }
                 }
-                ctx.print(1, 1, &format!("FPS: {}", ctx.fps));
+
+                ctx.print_color(
+                    1,
+                    1,
+                    RGB::named(rltk::RED),
+                    RGB::named(rltk::BLACK),
+                    &format!("FPS: {}", ctx.fps),
+                );
+                if ctx.fps >= 59.9 {
+                    {
+                        let rooms;
+                        {
+                            let map = ecs.fetch::<Map>();
+                            rooms = map.rooms.clone();
+                        }
+                        inject_mobs(ecs, &rooms, 1);
+                    }
+                }
                 player_input(ecs, ctx);
                 None
             }

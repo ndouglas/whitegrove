@@ -3,7 +3,7 @@ use std::fmt;
 
 use crate::error::Error;
 
-use super::{idx_to_xy, xy_to_idx, CompassDirection, UnsafePosition};
+use super::{get_dim_distance, idx_to_xy, xy_to_idx, CompassDirection, UnsafePosition};
 
 #[derive(Copy, Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Position {
@@ -29,20 +29,26 @@ impl Position {
         (*self).into()
     }
 
-    pub fn get_unsafe_to_delta(&self, (dx, dy): (i32, i32)) -> UnsafePosition {
-        self.get_unsafe().get_to_delta((dx, dy))
+    pub fn get_unsafe_to_delta_xy(&self, (dx, dy): (i32, i32)) -> UnsafePosition {
+        self.get_unsafe().get_to_delta_xy((dx, dy))
     }
 
-    pub fn is_safe_to_delta(&self, (width, height): (usize, usize), (dx, dy): (i32, i32)) -> bool {
-        self.get_unsafe_to_delta((dx, dy)).is_safe((width, height))
+    pub fn is_safe_to_delta_xy(
+        &self,
+        (width, height): (usize, usize),
+        (dx, dy): (i32, i32),
+    ) -> bool {
+        self.get_unsafe_to_delta_xy((dx, dy))
+            .is_safe((width, height))
     }
 
-    pub fn get_safe_to_delta(
+    pub fn get_safe_to_delta_xy(
         &self,
         (width, height): (usize, usize),
         (dx, dy): (i32, i32),
     ) -> Result<Position, Error> {
-        self.get_unsafe_to_delta((dx, dy)).get_safe((width, height))
+        self.get_unsafe_to_delta_xy((dx, dy))
+            .get_safe((width, height))
     }
 
     pub fn is_safe_to_compass_direction(
@@ -63,6 +69,38 @@ impl Position {
         self.get_unsafe()
             .get_to_compass_direction(dir)
             .get_safe((width, height))
+    }
+
+    pub fn get_unsafe_to_compass_direction(&self, dir: CompassDirection) -> UnsafePosition {
+        self.get_unsafe().get_to_compass_direction(dir)
+    }
+
+    pub fn get_delta_xy_to_position(&self, position: &Position) -> (i32, i32) {
+        self.get_unsafe()
+            .get_delta_xy_to_position(&position.get_unsafe())
+    }
+
+    pub fn get_compass_direction_to_position(&self, position: &Position) -> CompassDirection {
+        CompassDirection::get_from_delta_xy(self.get_delta_xy_to_position(position))
+    }
+
+    pub fn get_unsafe_toward_position(&self, position: &Position) -> UnsafePosition {
+        self.get_unsafe_to_compass_direction(self.get_compass_direction_to_position(position))
+    }
+
+    pub fn get_safe_toward_position(
+        &self,
+        (width, height): (usize, usize),
+        position: &Position,
+    ) -> Result<Position, Error> {
+        self.get_safe_to_compass_direction(
+            (width, height),
+            self.get_compass_direction_to_position(position),
+        )
+    }
+
+    pub fn is_neighboring_position(&self, position: &Position) -> bool {
+        get_dim_distance(self.x, position.x) <= 1 && get_dim_distance(self.y, position.y) <= 1
     }
 }
 

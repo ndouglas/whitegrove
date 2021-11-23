@@ -1,9 +1,12 @@
-use rltk::{Algorithm2D, BaseMap, NavigationPath, Point, Rltk, a_star_search};
+use rltk::{a_star_search, Algorithm2D, BaseMap, NavigationPath, Point, Rltk};
 
-use crate::model::{Position, Rectangle, idx_to_xy, xy_to_idx};
+use crate::model::{idx_to_xy, xy_to_idx, Position, Rectangle};
+use crate::spatial_index::*;
 
 pub mod tile;
 pub use tile::*;
+pub mod tile_backgrounds;
+pub use tile_backgrounds::*;
 pub mod tile_entities;
 pub use tile_entities::*;
 pub mod tile_flags;
@@ -22,37 +25,34 @@ pub struct Map {
     pub length: usize,
     pub tiles: Vec<TileType>,
     pub rooms: Vec<Rectangle>,
-    pub occupied_tiles: TileFlags,
-    pub revealed_tiles: TileFlags,
-    pub combatable_tiles: TileFlags,
-    pub tile_entities: TileEntities,
-    pub tile_occupants: TileOccupants,
 }
 
 impl Map {
     pub fn new(width: usize, height: usize) -> Self {
         let length = width * height;
         let (tiles, rooms) = get_rooms_and_corridors_tile_map(width, height);
+        set_spatial_index_dimensions(width, length);
         Map {
             width: width,
             height: height,
             length: length,
             tiles: tiles,
             rooms: rooms,
-            occupied_tiles: TileFlags::new(width, length),
-            revealed_tiles: TileFlags::new(width, length),
-            combatable_tiles: TileFlags::new(width, length),
-            tile_entities: TileEntities::new(width, length),
-            tile_occupants: TileOccupants::new(width, length),
         }
     }
 
     pub fn draw(&self, ctx: &mut Rltk) {
+        let revealed_tiles = REVEALED_TILES.lock().unwrap();
+        let tile_backgrounds = TILE_BACKGROUNDS.lock().unwrap();
         for (idx, tile) in self.tiles.iter().enumerate() {
             let (x, y) = self.get_idx_as_xy(idx);
-            if self.revealed_tiles.get_at_idx(idx) {
+            if revealed_tiles.get_at_idx(idx) {
                 let renderable = tile.get_renderable();
-                ctx.set(x, y, renderable.fg, renderable.bg, renderable.glyph);
+                let mut bg = renderable.bg;
+                if let Some(rgb) = tile_backgrounds.get_at_idx(idx) {
+                    bg = rgb;
+                }
+                ctx.set(x, y, renderable.fg, bg, renderable.glyph);
             }
         }
     }
@@ -93,7 +93,7 @@ impl Map {
         if !self.tiles[idx as usize].is_walkable() {
             return false;
         }
-        !self.occupied_tiles.get_at_idx(idx)
+        !OCCUPIED_TILES.lock().unwrap().get_at_idx(idx)
     }
 
     pub fn get_astar_path_idx(&mut self, idx1: usize, idx2: usize) -> NavigationPath {
@@ -109,20 +109,30 @@ impl Map {
         }
     }
 
-    pub fn get_next_astar_step_xy(&mut self, xy1: (usize, usize), xy2: (usize, usize)) -> Option<(usize, usize)> {
+    pub fn get_next_astar_step_xy(
+        &mut self,
+        xy1: (usize, usize),
+        xy2: (usize, usize),
+    ) -> Option<(usize, usize)> {
         match self.get_next_astar_step_idx(self.get_xy_as_idx(xy1), self.get_xy_as_idx(xy2)) {
             None => None,
             Some(idx) => Some(self.get_idx_as_xy(idx)),
         }
     }
 
-    pub fn get_next_astar_step_position(&mut self, position1: &Position, position2: &Position) -> Option<Position> {
-        match self.get_next_astar_step_idx(self.get_position_as_idx(position1), self.get_position_as_idx(position2)) {
+    pub fn get_next_astar_step_position(
+        &mut self,
+        position1: &Position,
+        position2: &Position,
+    ) -> Option<Position> {
+        match self.get_next_astar_step_idx(
+            self.get_position_as_idx(position1),
+            self.get_position_as_idx(position2),
+        ) {
             None => None,
             Some(idx) => Some(self.get_idx_as_position(idx)),
         }
     }
-
 }
 
 impl Algorithm2D for Map {

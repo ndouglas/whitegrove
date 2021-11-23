@@ -54,9 +54,15 @@ impl TileFlags {
         self.set_at_idx(self.get_position_as_idx(position), value);
     }
 
-    pub fn set_at_positions(&mut self, positions: Vec<&Position>, value: bool) {
+    pub fn set_at_positions(&mut self, positions: &Vec<&Position>, value: bool) {
         for position in positions.iter() {
             self.set_at_position(position, value);
         }
+    }
+
+    pub fn set_dimensions(&mut self, width: usize, length: usize) {
+        self.width = width;
+        self.length = length;
+        self.clear();
     }
 }

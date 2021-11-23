@@ -1,30 +1,40 @@
 use specs::prelude::*;
+use std::collections::HashSet;
+use std::iter::Extend;
 
 use crate::ecs::components::*;
-use crate::ecs::resources::composite_viewshed::CompositeViewshed;
 use crate::map::viewshed::Viewshed;
-use crate::map::Map;
+use crate::model::Position;
+use crate::spatial_index::REVEALED_TILES;
+
+fn get_composited_viewsheds(viewsheds: Vec<&Viewshed>) -> Vec<&Position> {
+    let mut result: HashSet<&Position> = HashSet::new();
+    for viewshed in viewsheds {
+        let visible_positions: HashSet<&Position> = viewshed
+            .visible_positions
+            .iter()
+            .map(|position| position)
+            .collect();
+        result.extend(visible_positions);
+    }
+    result.into_iter().collect()
+}
 
 pub struct IndexRevealedTiles {}
 
 impl<'a> System<'a> for IndexRevealedTiles {
-    type SystemData = (
-        WriteExpect<'a, Map>,
-        WriteExpect<'a, CompositeViewshed>,
-        ReadStorage<'a, HasViewshed>,
-    );
+    type SystemData = (Entities<'a>, ReadStorage<'a, HasViewshed>);
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut map, mut composite_viewshed_resource, has_viewshed_storage) = data;
-        let viewsheds: Vec<&Viewshed> = (&has_viewshed_storage)
+        let (entities, has_viewshed_storage) = data;
+        let viewsheds: Vec<&Viewshed> = (&entities, &has_viewshed_storage)
             .join()
-            .into_iter()
-            .map(|has_viewshed| &has_viewshed.viewshed)
+            .map(|(_entity, has_viewshed)| &has_viewshed.viewshed)
             .collect();
-        composite_viewshed_resource.composite_viewsheds(viewsheds);
-        let positions = (&composite_viewshed_resource.visible_positions)
-            .into_iter()
-            .collect();
-        map.revealed_tiles.set_at_positions(positions, true);
+        let positions = get_composited_viewsheds(viewsheds);
+        REVEALED_TILES
+            .lock()
+            .unwrap()
+            .set_at_positions(&positions, true);
     }
 }

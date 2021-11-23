@@ -1,6 +1,7 @@
 use specs::prelude::*;
 
 use crate::ecs::components::*;
+use crate::effects::*;
 
 pub struct MeleeCombat {}
 
@@ -10,17 +11,11 @@ impl<'a> System<'a> for MeleeCombat {
         WriteStorage<'a, HasMeleeTarget>,
         ReadStorage<'a, HasName>,
         ReadStorage<'a, HasHitPoints>,
-        WriteStorage<'a, HasSufferedDamage>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (
-            entities,
-            mut has_melee_target_storage,
-            has_name_storage,
-            has_hit_points_storage,
-            mut has_suffered_damage_storage,
-        ) = data;
+        let (entities, mut has_melee_target_storage, has_name_storage, has_hit_points_storage) =
+            data;
         let mut satisfied = vec![];
 
         for (entity, has_melee_target, has_name, has_hit_points) in (
@@ -48,10 +43,12 @@ impl<'a> System<'a> for MeleeCombat {
                             "{} hits {} for {} hp",
                             &has_name.name, &target_name.name, damage
                         );
-                        HasSufferedDamage::new_damage(
-                            &mut has_suffered_damage_storage,
-                            has_melee_target.melee_target,
-                            damage,
+                        enqueue_effect(
+                            Some(entity),
+                            Effect::Damage { amount: damage },
+                            Target::Entity {
+                                target: has_melee_target.melee_target,
+                            },
                         );
                     }
                 }

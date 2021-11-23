@@ -37,13 +37,17 @@ impl UnsafePosition {
         (self.x as i32 + dx, self.y as i32 + dy)
     }
 
-    pub fn get_to_delta(&self, (dx, dy): (i32, i32)) -> Self {
+    pub fn get_to_delta_xy(&self, (dx, dy): (i32, i32)) -> Self {
         let (new_x, new_y) = self.get_xy_with_offset((dx, dy));
         UnsafePosition::new(new_x, new_y)
     }
 
+    pub fn get_delta_xy_to_position(&self, position: &UnsafePosition) -> (i32, i32) {
+        (self.x - position.x, self.y - position.y)
+    }
+
     pub fn get_to_compass_direction(&self, dir: CompassDirection) -> Self {
-        self.get_to_delta(dir.get_delta_xy())
+        self.get_to_delta_xy(dir.get_delta_xy())
     }
 
     pub fn is_safe(&self, (width, height): (usize, usize)) -> bool {

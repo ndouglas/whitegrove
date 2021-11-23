@@ -1,17 +1,17 @@
-use specs::prelude::*;
+use rltk::RGB;
 
 use crate::model::*;
 
 #[derive(Clone, Debug, Default)]
-pub struct TileOccupants {
+pub struct TileBackgrounds {
     pub width: usize,
     pub length: usize,
-    pub vector: Vec<Option<Entity>>,
+    pub vector: Vec<Option<RGB>>,
 }
 
-impl TileOccupants {
+impl TileBackgrounds {
     pub fn new(width: usize, length: usize) -> Self {
-        TileOccupants {
+        TileBackgrounds {
             width: width,
             length: length,
             vector: vec![None; length],
@@ -26,16 +26,16 @@ impl TileOccupants {
         xy_to_idx(self.width, (position.x, position.y))
     }
 
-    pub fn get_at_idx(&self, idx: usize) -> Option<Entity> {
-        trace!("Getting occupant at {}", idx);
+    pub fn get_at_idx(&self, idx: usize) -> Option<RGB> {
+        trace!("Getting background at {}", idx);
         self.vector[idx]
     }
 
-    pub fn get_at_xy(&self, (x, y): (usize, usize)) -> Option<Entity> {
+    pub fn get_at_xy(&self, (x, y): (usize, usize)) -> Option<RGB> {
         self.get_at_idx(self.get_xy_as_idx((x, y)))
     }
 
-    pub fn get_at_position(&self, position: &Position) -> Option<Entity> {
+    pub fn get_at_position(&self, position: &Position) -> Option<RGB> {
         self.get_at_idx(self.get_position_as_idx(position))
     }
 
@@ -44,22 +44,22 @@ impl TileOccupants {
         self.vector = vec![None; self.length];
     }
 
-    pub fn set_at_idx(&mut self, idx: usize, entity: Entity) {
-        trace!("Setting occupant {:?} at {}.", entity, idx);
-        self.vector[idx] = Some(entity);
+    pub fn set_at_idx(&mut self, idx: usize, rgb: &RGB) {
+        trace!("Setting RGB {:?} at {}.", rgb, idx);
+        self.vector[idx] = Some(rgb.clone());
     }
 
-    pub fn set_at_xy(&mut self, (x, y): (usize, usize), entity: Entity) {
-        self.set_at_idx(self.get_xy_as_idx((x, y)), entity);
+    pub fn set_at_xy(&mut self, (x, y): (usize, usize), rgb: &RGB) {
+        self.set_at_idx(self.get_xy_as_idx((x, y)), rgb);
     }
 
-    pub fn set_at_position(&mut self, position: &Position, entity: Entity) {
-        self.set_at_xy((position.x, position.y), entity);
+    pub fn set_at_position(&mut self, position: &Position, rgb: &RGB) {
+        self.set_at_xy((position.x, position.y), rgb);
     }
 
-    pub fn set_at_positions(&mut self, vector: &Vec<(Entity, &Position)>) {
-        for (entity, position) in vector.iter() {
-            self.set_at_position(position, *entity);
+    pub fn set_at_positions(&mut self, vector: &Vec<(&RGB, &Position)>) {
+        for (rgb, position) in vector.iter() {
+            self.set_at_position(position, *rgb);
         }
     }
 

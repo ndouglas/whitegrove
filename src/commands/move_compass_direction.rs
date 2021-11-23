@@ -5,7 +5,10 @@ use crate::model::*;
 
 pub fn move_compass_direction(ecs: &mut World, entity: Entity, dir: CompassDirection) {
     if !ecs.entities().is_alive(entity) {
-        error!("Entity {:?} cannot move because it is no longer alive.", entity);
+        error!(
+            "Entity {:?} cannot move because it is no longer alive.",
+            entity
+        );
         return;
     }
     ecs.write_storage::<WantsToMove>()

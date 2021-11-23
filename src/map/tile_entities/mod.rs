@@ -68,6 +68,12 @@ impl TileEntities {
         self.add_at_xy((position.x, position.y), entity);
     }
 
+    pub fn add_at_positions(&mut self, vector: &Vec<(Entity, &Position)>) {
+        for (entity, position) in vector.iter() {
+            self.add_at_position(position, *entity);
+        }
+    }
+
     pub fn remove_at_idx(&mut self, idx: usize, entity: Entity) {
         self.vector[idx].retain(|&ent| ent != entity);
     }
@@ -78,5 +84,11 @@ impl TileEntities {
 
     pub fn remove_at_position(&mut self, position: &Position, entity: Entity) {
         self.remove_at_xy((position.x, position.y), entity);
+    }
+
+    pub fn set_dimensions(&mut self, width: usize, length: usize) {
+        self.width = width;
+        self.length = length;
+        self.clear();
     }
 }

@@ -6,6 +6,7 @@ pub use run_mode::*;
 
 use crate::ecs::components::*;
 use crate::ecs::dispatcher::{get_new_dispatcher, UnifiedDispatcher};
+use crate::effects::run_effects_queue;
 
 pub struct State {
     run_mode: RunMode,
@@ -51,6 +52,8 @@ impl State {
             self.dispatcher.run_now(&mut self.ecs);
             self.ecs.maintain();
             self.collect_garbage();
+            self.ecs.maintain();
+            run_effects_queue(&mut self.ecs);
             self.ecs.maintain();
         }
     }
