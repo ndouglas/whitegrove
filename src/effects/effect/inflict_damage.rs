@@ -18,7 +18,7 @@ pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
                     1 => rltk::INDIAN_RED,
                     2 => rltk::MEDIUMVIOLETRED,
                     3 => rltk::ORANGE_RED,
-                    4 => rltk::PALEVIOLETRED,
+                    //4 => rltk::PALEVIOLETRED,
                     5 => rltk::RED,
                     6 => rltk::RED1,
                     7 => rltk::RED2,

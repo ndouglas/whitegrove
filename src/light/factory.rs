@@ -12,6 +12,8 @@ pub enum Factory {
     Torch,
     /// A patch of phosphorescent moss.
     Moss,
+    /// Something a little creepy.
+    Deadlights,
     /// A completely random light source.
     Random,
 }
@@ -22,9 +24,10 @@ impl Factory {
     pub fn create(self) -> Source {
         use Factory::*;
         match self {
-            Candle => Source::new(RGB::from_u8(255, 127, 0), 6, 384),
+            Candle => Source::new(RGB::from_u8(255, 127, 0), 6, 256),
             Torch => Source::new(RGB::from_u8(255, 127, 0), 10, 512),
             Moss => Source::new(RGB::from_u8(173, 223, 173), 5, 256),
+            Deadlights => Source::new(RGB::from_u8(192, 192, 218), 5, 192),
             Random => Source::new(
                 RGB::from_u8(
                     random_range(0, 5) as u8 * 60,

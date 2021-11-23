@@ -15,9 +15,9 @@ impl<'a> System<'a> for IndexTileLighting {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        //set_tile_lighting_backgrounds();
+        set_tile_lighting_backgrounds();
         let mut tile_lighting = TILE_LIGHTING.lock().unwrap();
-        tile_lighting.clear();
+        //tile_lighting.clear();
         let (has_viewshed_storage, has_position_storage, has_light_source_storage) = data;
         for (has_viewshed, has_position, has_light_source) in (&has_viewshed_storage, &has_position_storage, &has_light_source_storage).join() {
             let position = &has_position.position;

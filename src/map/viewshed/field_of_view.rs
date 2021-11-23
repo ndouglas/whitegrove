@@ -109,7 +109,7 @@ pub fn field_of_view(x: i32, y: i32, radius: i32, map: &Map) -> Vec<Position> {
         cast_light(&mut visible, map, &viewer, 1, 1.0, 0.0, &transform);
     }
 
-    visible.iter().cloned().collect()
+    visible.iter().copied().collect()
 }
 
 fn cast_light(
