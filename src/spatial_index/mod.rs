@@ -1,3 +1,7 @@
+pub mod moss_seeded_tiles;
+pub use moss_seeded_tiles::MOSS_SEEDED_TILES;
+pub mod moss_tiles;
+pub use moss_tiles::MOSS_TILES;
 pub mod occupied_tiles;
 pub use occupied_tiles::OCCUPIED_TILES;
 pub mod revealed_tiles;
@@ -12,6 +16,8 @@ pub mod tile_occupants;
 pub use tile_occupants::TILE_OCCUPANTS;
 
 pub fn set_spatial_index_dimensions(width: usize, length: usize) {
+    moss_seeded_tiles::set_dimensions(width, length);
+    moss_tiles::set_dimensions(width, length);
     occupied_tiles::set_dimensions(width, length);
     revealed_tiles::set_dimensions(width, length);
     tile_backgrounds::set_dimensions(width, length);

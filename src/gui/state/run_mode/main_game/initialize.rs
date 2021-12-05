@@ -3,8 +3,10 @@ use specs::prelude::*;
 use crate::combat::*;
 use crate::dice::Dice;
 use crate::ecs::components::*;
-use crate::map::*;
+use crate::ecs::resources::*;
+use crate::lifecycle::Moss as MossLifecycle;
 use crate::light::Factory as LightSourceFactory;
+use crate::map::*;
 use crate::model::*;
 use crate::particle::Builder as ParticleBuilder;
 use crate::random;
@@ -87,9 +89,9 @@ pub fn inject_mobs(
                     },
                 },
             })
-            .with(HasLightSource {
-                light_source: LightSourceFactory::Random.create(),
-            })
+                        .with(HasLightSource {
+                            light_source: LightSourceFactory::Random.create(),
+                        })
             .with(HasName {
                 name: format!("{} #{}", name, i),
             })
@@ -97,15 +99,15 @@ pub fn inject_mobs(
     }
 }
 
-pub fn inject_moss(
-  ecs: &mut World,
-  rooms: &Vec<Rectangle>,
-  count: usize,
-  (width, height): (usize, usize),
-) {
-    for i in 0..count {
+pub fn inject_moss(ecs: &mut World, map: &Map, count: usize, (width, height): (usize, usize)) {
+    let rooms = &map.rooms;
+    let mut created = 0;
+    loop {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_random_xy();
+        if !map.is_exit_valid_xy((spawn_x, spawn_y)) {
+            continue;
+        }
         ecs.create_entity()
             .with(HasPosition {
                 position: Position::from_xy((spawn_x, spawn_y), (width, height)),
@@ -116,30 +118,52 @@ pub fn inject_moss(
             .with(HasLightSource {
                 light_source: LightSourceFactory::Moss.create(),
             })
+            .with(HasMossLifecycle {
+                moss_lifecycle: MossLifecycle::Moss,
+            })
+            .with(HasViewshed {
+                viewshed: Viewshed::new(5),
+            })
             .with(HasName {
-                name: format!("Moss #{}", i),
+                name: format!("Moss"),
             })
             .build();
+        created += 1;
+        if created == count {
+            return;
+        }
     }
 }
 
 pub fn inject_moss_seeds(
-  ecs: &mut World,
-  rooms: &Vec<Rectangle>,
-  count: usize,
-  (width, height): (usize, usize),
+    ecs: &mut World,
+    map: &Map,
+    count: usize,
+    (width, height): (usize, usize),
 ) {
-    for i in 0..count {
+    let rooms = &map.rooms;
+    let mut created = 0;
+    loop {
         let room = rooms[random::range(0, rooms.len())];
         let (spawn_x, spawn_y) = room.get_random_xy();
+        if !map.is_exit_valid_xy((spawn_x, spawn_y)) {
+            continue;
+        }
         ecs.create_entity()
             .with(HasPosition {
                 position: Position::from_xy((spawn_x, spawn_y), (width, height)),
             })
+            .with(HasMossLifecycle {
+                moss_lifecycle: MossLifecycle::Seed,
+            })
             .with(HasName {
-                name: format!("Moss #{}", i),
+                name: format!("Moss"),
             })
             .build();
+        created += 1;
+        if created == count {
+            return;
+        }
     }
 }
 
@@ -148,8 +172,9 @@ pub fn initialize_world(ecs: &mut World, width: usize, height: usize) {
     let (spawn_x, spawn_y) = map.rooms[0].get_center_xy();
     inject_player(ecs, (spawn_x, spawn_y), (width, height));
     inject_mobs(ecs, &map.rooms, 5, (width, height));
-    inject_moss(ecs, &map.rooms, 250, (width, height));
-    inject_moss_seeds(ecs, &map.rooms, 172, (width, height));
+    inject_moss(ecs, &map, 100, (width, height));
+    inject_moss_seeds(ecs, &map, 15, (width, height));
     ecs.insert(map);
+    ecs.insert(Tick(0));
     ecs.insert(ParticleBuilder::new());
 }

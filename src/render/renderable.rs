@@ -54,7 +54,7 @@ impl Factory {
             },
             Moss => Renderable {
                 glyph: to_cp437('#'),
-                fg: RGB::from_u8(173, random::range(223, 255), 173),
+                fg: RGB::from_u8(23, random::range(32, 92), 23),
                 bg: RGB::named(rltk::BLACK),
                 render_order: i32::MAX,
             },

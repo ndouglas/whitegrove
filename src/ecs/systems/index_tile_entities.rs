@@ -12,7 +12,6 @@ impl<'a> System<'a> for IndexTileEntities {
         let (entities, has_position_storage) = data;
         let positions_vector = (&entities, &has_position_storage)
             .join()
-            .into_iter()
             .map(|(entity, has_position)| (entity, &has_position.position))
             .collect();
         let mut tile_entities = TILE_ENTITIES.lock().unwrap();

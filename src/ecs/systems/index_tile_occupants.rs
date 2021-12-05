@@ -16,7 +16,6 @@ impl<'a> System<'a> for IndexTileOccupants {
         let (entities, has_position_storage, occupies_tile_storage) = data;
         let positions_vector = (&entities, &has_position_storage, &occupies_tile_storage)
             .join()
-            .into_iter()
             .map(|(entity, has_position, _occupies_tile)| (entity, &has_position.position))
             .collect();
         let mut tile_occupants = TILE_OCCUPANTS.lock().unwrap();

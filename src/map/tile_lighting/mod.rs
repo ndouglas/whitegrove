@@ -77,7 +77,13 @@ impl TileLighting {
     }
 
     pub fn set_from_backgrounds(&mut self) {
-        for (idx, bg_option) in crate::spatial_index::TILE_BACKGROUNDS.lock().unwrap().vector.iter().enumerate() {
+        for (idx, bg_option) in crate::spatial_index::TILE_BACKGROUNDS
+            .lock()
+            .unwrap()
+            .vector
+            .iter()
+            .enumerate()
+        {
             if let Some(bg) = bg_option {
                 self.vector[idx] = bg.clone();
             } else {

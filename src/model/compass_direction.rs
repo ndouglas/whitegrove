@@ -14,6 +14,17 @@ pub enum CompassDirection {
     West,
 }
 
+pub const COMPASS_DIRECTIONS: [CompassDirection; 8] = [
+    CompassDirection::Northwest,
+    CompassDirection::North,
+    CompassDirection::Northeast,
+    CompassDirection::East,
+    CompassDirection::Southeast,
+    CompassDirection::South,
+    CompassDirection::Southwest,
+    CompassDirection::West,
+];
+
 fn clamp<T: PartialOrd>(input: T, min: T, max: T) -> T {
     if input <= min {
         min

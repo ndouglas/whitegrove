@@ -3,7 +3,7 @@ use std::fmt;
 
 use crate::error::Error;
 
-use super::{get_dim_distance, idx_to_xy, xy_to_idx, CompassDirection};
+use super::{get_dim_distance, idx_to_xy, xy_to_idx, CompassDirection, COMPASS_DIRECTIONS};
 
 #[derive(Copy, Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct Position {
@@ -109,6 +109,15 @@ impl Position {
         get_dim_distance(self.x, position.x) <= 1 && get_dim_distance(self.y, position.y) <= 1
     }
 
+    pub fn get_adjacent_positions(&self) -> Vec<Position> {
+        let mut result = Vec::new();
+        for compass_direction in COMPASS_DIRECTIONS.iter().copied() {
+            if let Ok(position) = self.get_to_compass_direction(compass_direction) {
+                result.push(position);
+            }
+        }
+        result
+    }
 }
 
 impl fmt::Display for Position {

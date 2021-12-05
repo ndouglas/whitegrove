@@ -8,22 +8,22 @@ use crate::particle::Lifetime as ParticleLifetime;
 use crate::random;
 use crate::render::Renderable;
 
-pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
+pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, entity: Entity) {
     if let Effect::Damage { amount } = spawner.effect {
         let mut has_hit_points_storage = ecs.write_storage::<HasHitPoints>();
-        if let Some(has_hit_points) = has_hit_points_storage.get_mut(target) {
+        if let Some(has_hit_points) = has_hit_points_storage.get_mut(entity) {
             has_hit_points.hit_points.current -= amount;
-            if let Some(position) = get_entity_position(ecs, target) {
+            if let Some(position) = get_entity_position(ecs, entity) {
                 let color_name = match random::range(0, 11) {
                     1 => rltk::INDIAN_RED,
-                    2 => rltk::MEDIUMVIOLETRED,
-                    3 => rltk::ORANGE_RED,
+                    //2 => rltk::MEDIUMVIOLETRED,
+                    //3 => rltk::ORANGE_RED,
                     //4 => rltk::PALEVIOLETRED,
                     5 => rltk::RED,
                     6 => rltk::RED1,
                     7 => rltk::RED2,
-                    8 => rltk::RED3,
-                    9 => rltk::RED4,
+                    //8 => rltk::RED3,
+                    //9 => rltk::RED4,
                     10 => rltk::DARKSALMON,
                     _ => rltk::DARK_RED,
                 };
@@ -32,9 +32,7 @@ pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
                     Effect::BloodSpatter {
                         color: RGB::named(color_name),
                     },
-                    Target::Tile {
-                        index: position.idx,
-                    },
+                    Target::Position { position },
                 );
                 enqueue_effect(
                     None,
@@ -47,7 +45,7 @@ pub fn inflict_damage(ecs: &mut World, spawner: &Spawner, target: Entity) {
                         },
                         lifetime: ParticleLifetime { lifetime: 200.0 },
                     },
-                    Target::Entity { target },
+                    Target::Entity { entity },
                 );
             }
         }

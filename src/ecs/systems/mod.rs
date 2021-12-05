@@ -1,5 +1,9 @@
 pub mod ai;
 pub use ai::*;
+pub mod index_moss_seeded_tiles;
+pub use index_moss_seeded_tiles::*;
+pub mod index_moss_tiles;
+pub use index_moss_tiles::*;
 pub mod index_occupied_tiles;
 pub use index_occupied_tiles::*;
 pub mod index_revealed_tiles;
@@ -12,6 +16,8 @@ pub mod index_tile_occupants;
 pub use index_tile_occupants::*;
 pub mod melee_combat;
 pub use melee_combat::*;
+pub mod moss_lifecycle;
+pub use moss_lifecycle::*;
 pub mod movement;
 pub use movement::*;
 pub mod particle_spawner;

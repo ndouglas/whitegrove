@@ -1,25 +1,27 @@
 use specs::prelude::*;
 
+use crate::model::Position;
+
 use super::Spawner;
 
 #[derive(Clone, Debug)]
 pub enum Target {
-    Tile { index: usize },
-    TileList { indices: Vec<usize> },
-    Entity { target: Entity },
-    EntityList { targets: Vec<Entity> },
+    Position { position: Position },
+    Positions { positions: Vec<Position> },
+    Entity { entity: Entity },
+    Entities { entities: Vec<Entity> },
 }
 
 impl Target {
     pub fn apply(&self, ecs: &mut World, spawner: &Spawner) {
         use Target::*;
         match self {
-            Tile { index } => spawner.effect.affect_tile(ecs, spawner, *index),
-            TileList { indices } => indices
+            Position { position } => spawner.effect.affect_tile(ecs, spawner, position),
+            Positions { positions } => positions
                 .iter()
-                .for_each(|index| spawner.effect.affect_tile(ecs, spawner, *index)),
-            Entity { target } => spawner.effect.affect_entity(ecs, spawner, *target),
-            EntityList { targets } => targets
+                .for_each(|position| spawner.effect.affect_tile(ecs, spawner, position)),
+            Entity { entity } => spawner.effect.affect_entity(ecs, spawner, *entity),
+            Entities { entities } => entities
                 .iter()
                 .for_each(|entity| spawner.effect.affect_entity(ecs, spawner, *entity)),
         }

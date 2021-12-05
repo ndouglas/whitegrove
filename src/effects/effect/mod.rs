@@ -2,8 +2,9 @@ use rltk::RGB;
 use specs::prelude::*;
 use std::fmt;
 
-use crate::particle::Lifetime as ParticleLifetime;
+use crate::lifecycle::Moss as MossLifecycle;
 use crate::model::Position;
+use crate::particle::Lifetime as ParticleLifetime;
 use crate::render::Renderable;
 use crate::spatial_index::TILE_ENTITIES;
 
@@ -13,6 +14,12 @@ pub mod display_tile_particle;
 pub use display_tile_particle::*;
 pub mod inflict_damage;
 pub use inflict_damage::*;
+pub mod kill_moss;
+pub use kill_moss::*;
+pub mod moss_lifecycle;
+pub use moss_lifecycle::*;
+pub mod seed_moss;
+pub use seed_moss::*;
 pub mod update_position;
 pub use update_position::*;
 
@@ -35,6 +42,11 @@ pub enum Effect {
     UpdatePosition {
         new_position: Position,
     },
+    MossLifecycle {
+        next: MossLifecycle,
+    },
+    KillMoss,
+    SeedMoss,
 }
 
 impl Effect {
@@ -43,23 +55,25 @@ impl Effect {
         match self {
             Damage { .. } => true,
             UpdatePosition { .. } => true,
+            KillMoss => true,
             _ => false,
         }
     }
 
-    pub fn affect_tile(&self, ecs: &mut World, spawner: &Spawner, idx: usize) {
+    pub fn affect_tile(&self, ecs: &mut World, spawner: &Spawner, position: &Position) {
         if self.affects_entities() {
             TILE_ENTITIES
                 .lock()
                 .unwrap()
-                .get_at_idx(idx)
+                .get_at_position(position)
                 .iter()
                 .for_each(|entity| self.affect_entity(ecs, spawner, *entity));
         }
         use Effect::*;
         match self {
-            BloodSpatter { .. } => blood_spatter(ecs, spawner, idx),
-            DisplayTileParticle { .. } => display_tile_particle(ecs, spawner, idx),
+            BloodSpatter { .. } => blood_spatter(ecs, spawner, position),
+            DisplayTileParticle { .. } => display_tile_particle(ecs, spawner, position),
+            SeedMoss => seed_moss(ecs, spawner, position),
             _ => {}
         }
     }
@@ -70,10 +84,12 @@ impl Effect {
             Damage { .. } => inflict_damage(ecs, spawner, target),
             DisplayTileParticle { .. } => {
                 if let Some(position) = get_entity_position(ecs, target) {
-                    display_tile_particle(ecs, spawner, position.idx);
+                    display_tile_particle(ecs, spawner, &position);
                 }
             }
             UpdatePosition { .. } => update_position(ecs, spawner, target),
+            KillMoss => kill_moss(ecs, spawner, target),
+            MossLifecycle { .. } => moss_lifecycle(ecs, spawner, target),
             _ => {}
         }
     }

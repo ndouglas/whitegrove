@@ -11,6 +11,8 @@ pub mod has_melee_target;
 pub use has_melee_target::*;
 pub mod has_melee_weapon;
 pub use has_melee_weapon::*;
+pub mod has_moss_lifecycle;
+pub use has_moss_lifecycle::*;
 pub mod has_name;
 pub use has_name::*;
 pub mod has_particle_lifetime;
@@ -32,6 +34,7 @@ pub fn register_components(ecs: &mut World) {
     ecs.register::<HasAi>();
     ecs.register::<HasHitPoints>();
     ecs.register::<HasLightSource>();
+    ecs.register::<HasMossLifecycle>();
     ecs.register::<HasMeleeTarget>();
     ecs.register::<HasMeleeWeapon>();
     ecs.register::<HasName>();

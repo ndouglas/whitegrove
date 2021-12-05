@@ -8,8 +8,10 @@ pub mod player;
 use player::*;
 
 use crate::ecs::components::*;
+use crate::ecs::resources::*;
+use crate::lifecycle::Moss as MossLifecycle;
 use crate::map::*;
-use crate::spatial_index::{ REVEALED_TILES, TILE_LIGHTING };
+use crate::spatial_index::{REVEALED_TILES, TILE_LIGHTING};
 
 use super::RunMode;
 
@@ -34,7 +36,6 @@ impl Mode {
                     let map = ecs.fetch::<Map>();
                     map.draw(ctx);
                 }
-                let entity_count;
                 {
                     let has_position_storage = ecs.read_storage::<HasPosition>();
                     let has_renderable_storage = ecs.read_storage::<HasRenderable>();
@@ -52,17 +53,51 @@ impl Mode {
                         }
                     }
                 }
+                let entity_count;
                 {
                     let entities = ecs.entities();
                     let has_hit_points_storage = ecs.read_storage::<HasHitPoints>();
                     entity_count = (&entities, &has_hit_points_storage).join().count();
+                }
+                let moss_count;
+                {
+                    let entities = ecs.entities();
+                    let has_moss_lifecycle_storage = ecs.read_storage::<HasMossLifecycle>();
+                    moss_count = (&entities, &has_moss_lifecycle_storage)
+                        .join()
+                        .filter(|(_entity, has_moss_lifecycle)| {
+                            has_moss_lifecycle.moss_lifecycle == MossLifecycle::Moss
+                        })
+                        .into_iter()
+                        .collect::<Vec<_>>()
+                        .len();
+                }
+                let moss_seed_count;
+                {
+                    let entities = ecs.entities();
+                    let has_moss_lifecycle_storage = ecs.read_storage::<HasMossLifecycle>();
+                    moss_seed_count = (&entities, &has_moss_lifecycle_storage)
+                        .join()
+                        .filter(|(_entity, has_moss_lifecycle)| {
+                            has_moss_lifecycle.moss_lifecycle == MossLifecycle::Seed
+                        })
+                        .into_iter()
+                        .collect::<Vec<_>>()
+                        .len();
+                }
+                let tick_count;
+                {
+                    tick_count = ecs.fetch::<Tick>().0;
                 }
                 ctx.print_color(
                     1,
                     1,
                     RGB::named(rltk::RED),
                     RGB::named(rltk::BLACK),
-                    &format!("FPS: {}   Entities: {}", ctx.fps, entity_count),
+                    &format!(
+                        "FPS: {}   Entities: {}  Moss: {}  Moss Seeds: {} Tick: {}",
+                        ctx.fps, entity_count, moss_count, moss_seed_count, tick_count
+                    ),
                 );
                 if ctx.fps >= 59.9 {
                     {

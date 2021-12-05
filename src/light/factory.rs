@@ -25,8 +25,8 @@ impl Factory {
         use Factory::*;
         match self {
             Candle => Source::new(RGB::from_u8(255, 127, 0), 6, 256),
-            Torch => Source::new(RGB::from_u8(255, 127, 0), 10, 512),
-            Moss => Source::new(RGB::from_u8(173, 223, 173), 5, 256),
+            Torch => Source::new(RGB::from_u8(255, 127, 0), 10, 384),
+            Moss => Source::new(RGB::from_u8(83, 223, 83), 6, 8),
             Deadlights => Source::new(RGB::from_u8(192, 192, 218), 5, 192),
             Random => Source::new(
                 RGB::from_u8(
@@ -34,8 +34,8 @@ impl Factory {
                     random_range(0, 5) as u8 * 60,
                     random_range(0, 5) as u8 * 60,
                 ),
-                random_range(4, 12),
-                random_range(128, 384),
+                random_range(0, 10),
+                random_range(0, 256),
             ),
         }
     }

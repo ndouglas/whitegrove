@@ -47,7 +47,7 @@ impl<'a> System<'a> for MeleeCombat {
                             Some(entity),
                             Effect::Damage { amount: damage },
                             Target::Entity {
-                                target: has_melee_target.melee_target,
+                                entity: has_melee_target.melee_target,
                             },
                         );
                     }

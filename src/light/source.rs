@@ -1,7 +1,7 @@
 use rltk::RGB;
 use std::cmp::max;
 
-use crate::model::{ Position, get_dim_distance };
+use crate::model::{get_dim_distance, Position};
 
 /// Something that gives off light.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -14,15 +14,8 @@ pub struct Source {
     pub intensity: usize,
 }
 
-/// Convert -1.0..1.0 float to u8.
-#[inline]
-pub fn get_f32_as_u8(float: f32) -> u8 {
-    (float * 255.0) as u8
-}
-
 /// Something that gives off light.
 impl Source {
-
     pub fn new(color: RGB, radius: usize, intensity: usize) -> Self {
         Source {
             color: color,
@@ -31,9 +24,8 @@ impl Source {
         }
     }
 
-
     /// Compute intensity of light at a distance.
-    pub fn intensity_at(&self, source_position: &Position, lit_position: &Position) -> usize {
+    pub fn get_intensity_at(&self, source_position: &Position, lit_position: &Position) -> usize {
         let dx = get_dim_distance(source_position.x, lit_position.x);
         let dy = get_dim_distance(source_position.y, lit_position.y);
         if dx > self.radius || dy > self.radius {
@@ -47,23 +39,31 @@ impl Source {
         }
     }
 
+    /// Compute multiplier of light at a distance.
+    pub fn get_intensity_multiplier_at(&self, source_position: &Position, lit_position: &Position) -> f64 {
+        self.get_intensity_at(source_position, lit_position) as f64 / 512 as f64
+    }
+
+    /// Transform a color component at a specified distance.
+    pub fn transform_color_component(&self, transformer: f32, base: f32, multiplier: f64) -> u8 {
+        let new_base = (base * 255.0) as f64;
+        let new_trans = (transformer * 255.0) as u8;
+        let diff = (new_trans as i32 - new_base as i32).abs() as f64;
+        (new_base + (diff * multiplier)) as u8
+    }
+
     /// Transform a color at a specified distance.
-    pub fn transform_color_at(&self, color: RGB, source_position: &Position, lit_position: &Position) -> RGB {
-        let intensity = self.intensity_at(source_position, lit_position);
-        let multiplier = intensity as f64 / 512 as f64;
+    pub fn transform_color_at(
+        &self,
+        color: RGB,
+        source_position: &Position,
+        lit_position: &Position,
+    ) -> RGB {
+        let multiplier = self.get_intensity_multiplier_at(source_position, lit_position);
         let my_color = self.color.clone();
-        let red = get_f32_as_u8(color.r);
-        let green = get_f32_as_u8(color.g);
-        let blue = get_f32_as_u8(color.b);
-        let my_red = get_f32_as_u8(my_color.r);
-        let my_green = get_f32_as_u8(my_color.g);
-        let my_blue = get_f32_as_u8(my_color.b);
-        let r_diff = (my_red as i32 - red as i32).abs();
-        let g_diff = (my_green as i32 - green as i32).abs();
-        let b_diff = (my_blue as i32 - blue as i32).abs();
-        let new_r = (red as f64 + (r_diff as f64 * multiplier)) as u8;
-        let new_g = (green as f64 + (g_diff as f64 * multiplier)) as u8;
-        let new_b = (blue as f64 + (b_diff as f64 * multiplier)) as u8;
+        let new_r = self.transform_color_component(my_color.r, color.r, multiplier);
+        let new_g = self.transform_color_component(my_color.g, color.g, multiplier);
+        let new_b = self.transform_color_component(my_color.b, color.b, multiplier);
         RGB::from_u8(new_r, new_g, new_b)
     }
 }

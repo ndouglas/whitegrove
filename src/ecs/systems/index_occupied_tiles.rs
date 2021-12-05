@@ -12,7 +12,6 @@ impl<'a> System<'a> for IndexOccupiedTiles {
         let (has_position_storage, occupies_tile_storage) = data;
         let positions = (&has_position_storage, &occupies_tile_storage)
             .join()
-            .into_iter()
             .map(|(has_position, _occupies_tile)| &has_position.position)
             .collect();
         let mut occupied_tiles = OCCUPIED_TILES.lock().unwrap();

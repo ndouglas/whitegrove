@@ -29,7 +29,6 @@ impl<'a> System<'a> for Ai {
             !&wants_to_move_storage,
         )
             .join()
-            .into_iter()
             .map(|(entity, _has_position, _has_ai, ())| entity)
             .collect();
         for entity in non_moving_entities.iter() {

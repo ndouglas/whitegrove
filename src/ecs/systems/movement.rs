@@ -1,6 +1,7 @@
 use specs::prelude::*;
 
 use crate::ecs::components::*;
+use crate::ecs::resources::*;
 use crate::effects::*;
 use crate::map::Map;
 use crate::model::CompassDirection;
@@ -10,6 +11,7 @@ pub struct Movement {}
 
 impl<'a> System<'a> for Movement {
     type SystemData = (
+        ReadExpect<'a, Tick>,
         WriteExpect<'a, Map>,
         Entities<'a>,
         ReadStorage<'a, HasName>,
@@ -22,6 +24,7 @@ impl<'a> System<'a> for Movement {
 
     fn run(&mut self, data: Self::SystemData) {
         let (
+            tick_resource,
             mut map,
             entities,
             has_name_storage,
@@ -31,6 +34,9 @@ impl<'a> System<'a> for Movement {
             is_player_storage,
             mut has_melee_target_storage,
         ) = data;
+        if tick_resource.0 % 5 != 0 {
+            return;
+        }
         let mut satisfied = vec![];
         let mut set_move_compass_direction = vec![];
         let mut set_move_randomly = vec![];
@@ -226,10 +232,10 @@ impl<'a> System<'a> for Movement {
         for (entity, new_position) in actually_move.iter() {
             enqueue_effect(
                 Some(*entity),
-                Effect::UpdatePosition { new_position: *new_position },
-                Target::Entity {
-                    target: *entity,
+                Effect::UpdatePosition {
+                    new_position: *new_position,
                 },
+                Target::Entity { entity: *entity },
             );
         }
         for entity in satisfied.iter() {

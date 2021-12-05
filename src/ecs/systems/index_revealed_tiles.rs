@@ -31,6 +31,15 @@ impl<'a> System<'a> for IndexRevealedTiles {
             .join()
             .map(|(_entity, has_viewshed)| &has_viewshed.viewshed)
             .collect();
+        if viewsheds
+            .iter()
+            .filter(|&viewshed| viewshed.is_dirty)
+            .collect::<Vec<&&Viewshed>>()
+            .len()
+            == 0
+        {
+            return;
+        }
         let positions = get_composited_viewsheds(viewsheds);
         REVEALED_TILES
             .lock()

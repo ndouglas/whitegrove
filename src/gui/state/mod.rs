@@ -6,6 +6,7 @@ pub use run_mode::*;
 
 use crate::ecs::components::*;
 use crate::ecs::dispatcher::{get_new_dispatcher, UnifiedDispatcher};
+use crate::ecs::resources::Tick;
 use crate::effects::run_effects_queue;
 use crate::garbage_collector::collect_garbage;
 
@@ -34,6 +35,8 @@ impl State {
             self.ecs.maintain();
             run_effects_queue(&mut self.ecs);
             self.ecs.maintain();
+            let mut tick = self.ecs.write_resource::<Tick>();
+            tick.0 += 1;
         }
     }
 }
